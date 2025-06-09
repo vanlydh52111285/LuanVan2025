@@ -25,14 +25,43 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[]  PUBLIC_ENOPOINTS={"/student/register","/auth/student/login","/auth/intro","/auth/admin/login"};
+    private final String[]  PUBLIC_ENOPOINTS_POST={"/student/register","/auth/student/login","/auth/intro","/auth/admin/login"};
+    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups"};
+    private final String[] ADMIN_POST={"/admin/create-cadre","/groups"};
+    private final String[] ADMIN_GET={"/student/update-users"};
+    private final String[] ADMIN_PUT={};
+    private final String[] ADMIN_DELETE={"/admin/users/{id}"};
+    private final String[] CADRE_POST={};
+    private final String[] CADRE_GET={};
+    private final String[] CADRE_PUT={};
+    private final String[] CADRE_DELETE={};
+    private final String[] STUDENT_POST={};
+    private final String[] STUDEN_GET={};
+    private final String[] STUDENT_PUT={"/student/update-users"};
+    private final String[] STUDENT_DELETE={};
+
+
+
     @Value("${jwt.signerKey}")
     private String signerKey;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.authorizeHttpRequests(
                 request ->
-                        request.requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS).permitAll()
+                        request.requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS_POST).permitAll()
+                                .requestMatchers(HttpMethod.GET,PUBLIC_ENOPOINTS_GET).permitAll()
+                                .requestMatchers(HttpMethod.POST,ADMIN_POST).hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST,ADMIN_GET).hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST,ADMIN_PUT).hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST,ADMIN_DELETE).hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST,CADRE_POST).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.POST,CADRE_GET).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.POST,CADRE_PUT).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.POST,CADRE_DELETE).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.POST,STUDENT_POST).hasRole("STUDENT")
+                                .requestMatchers(HttpMethod.POST,STUDEN_GET).hasRole("STUDENT")
+                                .requestMatchers(HttpMethod.POST,STUDENT_PUT).hasRole("STUDENT")
+                                .requestMatchers(HttpMethod.POST,STUDENT_DELETE).hasRole("STUDENT")
 
                                 .anyRequest().authenticated());
 

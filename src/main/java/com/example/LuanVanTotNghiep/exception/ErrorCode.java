@@ -25,6 +25,15 @@ public enum ErrorCode {
     INVALID_PASSWORD(1009, "Mật khẩu không hợp lệ (ít nhất 6 ký tự)", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTS(1010, "Email đã tồn tại", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1011, "Email không hợp lệ", HttpStatus.BAD_REQUEST),
+    CONTENT_EXISTS(1017, "Tổ hợp đã tồn tại", HttpStatus.BAD_REQUEST),
+    CONTENT_NO_EXISTS(1018, "Tổ hợp không tồn tại", HttpStatus.BAD_REQUEST),
+    UNIVERSITYFULLNAME_EXISTS(1019, "Tên trường đã tồn tại", HttpStatus.BAD_REQUEST),
+    UNIVERSITYFULLNAME_NOT_FOUND(1020,"Tên trường không tồn tại", HttpStatus.NOT_FOUND),
+    UNIVERSITYNAME_EXISTS(1021, "Tên viết tắt trường đã tồn tại", HttpStatus.BAD_REQUEST),
+    UNIVERSITYNAME_NOT_FOUND(1022, "Tên viết tắt trường không tồn tại", HttpStatus.NOT_FOUND),
+    UNIVERSITYID_EXISTS(1021, "Mã trường đã tồn tại", HttpStatus.BAD_REQUEST),
+    UNIVERSITYID_NOT_FOUND(1022, "Mã trường dùng không tồn tại", HttpStatus.NOT_FOUND),
+
 
     // Lỗi liên quan đến dữ liệu
     DATA_NOT_FOUND(1012, "Dữ liệu không được tìm thấy", HttpStatus.NOT_FOUND),

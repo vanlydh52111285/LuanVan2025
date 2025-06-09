@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -29,10 +29,6 @@ public class Users {
     String password;
     Date created_at;
     Set<String> role;
-
-    @OneToMany(mappedBy = "application_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Applications> applicationList;
-
-    @OneToMany(mappedBy = "document_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Documents> documentsList;
+    @ManyToMany(mappedBy = "users")
+    Set<Shifts> shifts = new HashSet<>();
 }
