@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +57,19 @@ public class UsersService {
         List<UsersResponse> list = usersMapper.listUsers(usersRepository.findAll());
         return list;
     }
+    @PostAuthorize("returnObject.name == authentication.name")
     public UsersResponse getUsers(String id){
         Users users = usersRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.UNAUTHORIZED));
         return usersMapper.toUserResponse(users);
+    }
+
+    public void deleteUsers(String id){
+        usersRepository.deleteById(id);
+    }
+
+    public UsersResponse updateUsers(String id , UsersRequest request){
+        Users users = usersRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USERNAME_NOT_FOUND));
+        usersMapper.updateUser(users,request);
+        return usersMapper.toUserResponse(usersRepository.save(users));
     }
 }

@@ -22,4 +22,5 @@ public class UsersRequest {
     String email;
     @Size (min = 6, message = "INVALID_PASSWORD")
     String password;
+    String shift_id;
 }

@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -28,4 +29,6 @@ public class Users {
     String password;
     Date created_at;
     Set<String> role;
+    @ManyToMany(mappedBy = "users")
+    Set<Shifts> shifts = new HashSet<>();
 }
