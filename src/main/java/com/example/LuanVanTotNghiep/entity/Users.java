@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
 import java.util.List;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -37,6 +36,8 @@ public class Users {
     @OneToMany(mappedBy = "document_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Documents> documentsList;
 
-    @ManyToMany(mappedBy = "users")
-    Set<Shifts> shifts = new HashSet<>();
+    public Users(String userId) {
+        super();
+        this.user_id = userId;
+    }
 }

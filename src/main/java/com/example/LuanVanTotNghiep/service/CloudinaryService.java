@@ -2,6 +2,7 @@ package com.example.LuanVanTotNghiep.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class CloudinaryService {
     @Autowired
@@ -24,18 +26,37 @@ public class CloudinaryService {
     }
 
     // Xóa file trên Cloudinary dựa trên public_id
-    public void deleteFile(String publicId) throws IOException {
+    public Map deleteFile(String publicId) throws IOException {
         if (publicId != null) {
-            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            log.info("Deleting Cloudinary file with publicId: {}", publicId);
+            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            return result != null ? result : Map.of("result", "error");
         }
+        return Map.of("result", "invalid_id");
     }
+
 
     // Trích xuất public_id từ URL Cloudinary
     public String extractPublicIdFromUrl(String url) {
-        if (url == null) return null;
-        String[] parts = url.split("/upload/");
-        if (parts.length < 2) return null;
-        String publicIdWithExtension = parts[1];
-        return publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf('.'));
+        try {
+            // Bỏ domain & phần "/upload/"
+            String path = url.substring(url.indexOf("/upload/") + 8);
+
+            // Bỏ "v1234567890/" nếu có
+            if (path.startsWith("v") && path.charAt(1) >= '0' && path.charAt(1) <= '9') {
+                path = path.substring(path.indexOf("/") + 1);
+            }
+
+            // Bỏ đuôi file
+            if (path.contains(".")) {
+                path = path.substring(0, path.lastIndexOf('.'));
+            }
+
+            return path;
+        } catch (Exception e) {
+            log.error("Failed to extract publicId from URL: {}", url, e);
+            return null;
+        }
     }
+
 }

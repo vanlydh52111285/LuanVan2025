@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public enum ErrorCode {
     // Lỗi chung
-    //UNEXPECTED_ERROR(1000, "Lỗi không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
+//    UNEXPECTED_ERROR(1000, "Lỗi không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_REQUEST(1001, "Yêu cầu không hợp lệ", HttpStatus.BAD_REQUEST),
+    UNEXPECTED_ERROR(1017, "Lỗi không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Lỗi liên quan đến xác thực
     UNAUTHORIZED(1002, "Không được phép truy cập", HttpStatus.UNAUTHORIZED),

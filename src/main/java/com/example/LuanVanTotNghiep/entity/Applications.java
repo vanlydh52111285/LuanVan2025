@@ -20,7 +20,11 @@ public class Applications {
 
     @Id
     String application_id;
+
+    @Enumerated(EnumType.STRING)
     ApplicationTypeEnum application_type;
+
+    @Enumerated(EnumType.STRING)
     ApplicationEnum status;
     int priority;
     float total_score;
