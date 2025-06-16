@@ -57,7 +57,7 @@ public class UsersService {
         List<UsersResponse> list = usersMapper.listUsers(usersRepository.findAll());
         return list;
     }
-    @PostAuthorize("returnObject.name == authentication.name")
+    @PostAuthorize("returnObject.users_id == authentication.users_id")
     public UsersResponse getUsers(String id){
         Users users = usersRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.UNAUTHORIZED));
         return usersMapper.toUserResponse(users);

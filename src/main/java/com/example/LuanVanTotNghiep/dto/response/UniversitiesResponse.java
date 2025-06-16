@@ -18,5 +18,5 @@ public class UniversitiesResponse {
     String universityname;
     String university_english_name;
     String content;
-    Set<Branchs> branches = new HashSet<>();
+
 }

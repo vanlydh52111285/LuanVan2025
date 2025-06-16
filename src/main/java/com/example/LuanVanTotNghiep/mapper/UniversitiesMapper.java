@@ -6,9 +6,12 @@ import com.example.LuanVanTotNghiep.entity.Universities;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UniversitiesMapper {
     Universities toCreateUniversity(UniversitiesRequest request);
     UniversitiesResponse toUniversityResponse(Universities universities);
     void updateUniversity(@MappingTarget Universities universities, UniversitiesRequest request );
+    List<UniversitiesResponse> listUniversities (List<Universities> list);
 }
