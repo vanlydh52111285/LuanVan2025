@@ -19,6 +19,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +38,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AuthenticationService {
     // Repository để truy vấn dữ liệu người dùng từ database
     UsersRepository usersReponsitory; // Lưu ý: Có lỗi chính tả "usersReponsitory", nên là "usersRepository"
+    UsersRepository usersRepository;
 
     // Khóa bí mật để ký và xác minh JWT, lấy từ file cấu hình (application.properties)
     @NonFinal // Cho phép gán giá trị cho trường này
@@ -94,7 +96,7 @@ public class AuthenticationService {
                 .subject(users.getUser_id())
                 .issuer(users.getEmail())
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(24, ChronoUnit.HOURS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
                 .claim("scope", buidScope(users))
                 .build();
 
@@ -129,5 +131,17 @@ public class AuthenticationService {
         // Trả về chuỗi scope (ví dụ: "ROLE_USER ROLE_ADMIN")
         return stringJoiner.toString();
         // Lưu ý: Lỗi chính tả "buidScope", nên là "buildScope"
+    }
+
+    public String getAuthenticatedUserId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+        String user_id = authentication.getName(); // Lấy user_id từ token (sub)
+        Users user = usersRepository.findById(user_id)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+        return user.getUser_id();
+
     }
 }

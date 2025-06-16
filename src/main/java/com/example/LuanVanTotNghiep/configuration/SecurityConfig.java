@@ -26,19 +26,19 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[]  PUBLIC_ENOPOINTS_POST={"/student/register","/auth/student/login","/auth/intro","/auth/admin/login"};
-    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups","/university","/api/excel/download","/branch","/program"};
+    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups","/university","/api/excel/download","/branch","/program", "/api/methods/getMethodById/{method_id}", "/api/methods/getAllMethods"};
     private final String[] ADMIN_POST={"/admin/create-cadre","/groups","/university","/branch","/create-branch-group","/program","/quantity"};
-    private final String[] ADMIN_GET={"/student/update-users","/quantity"};
+    private final String[] ADMIN_GET={"/student/update-users","/quantity", "/api/applications/getAllApplications"};
     private final String[] ADMIN_PUT={};
     private final String[] ADMIN_DELETE={"/admin/users/{id}","/delete-branch-group"};
     private final String[] CADRE_POST={};
-    private final String[] CADRE_GET={};
+    private final String[] CADRE_GET={"/api/applications/getAllApplications"};
     private final String[] CADRE_PUT={};
     private final String[] CADRE_DELETE={};
-    private final String[] STUDENT_POST={};
-    private final String[] STUDEN_GET={};
-    private final String[] STUDENT_PUT={"/student/update-users"};
-    private final String[] STUDENT_DELETE={};
+    private final String[] STUDENT_POST={"/api/documents/create", "/api/applications/create"};
+    private final String[] STUDEN_GET={"/api/documents/images", "/api/applications/getApplicationsByUser"};
+    private final String[] STUDENT_PUT={"/student/update-users", "/api/applications/update/{applicationId}", "/api/documents/update/{documentId}"};
+    private final String[] STUDENT_DELETE={"/api/applications/delete/{applicationId}" ,"/api/documents/delete/{documentId}"};
 
 
 
