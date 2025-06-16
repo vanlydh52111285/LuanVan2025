@@ -1,10 +1,12 @@
 package com.example.LuanVanTotNghiep.entity;
 
+import com.example.LuanVanTotNghiep.dto.response.Branchs_QuantitiesResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -21,7 +23,14 @@ public class Quantities {
     int admission_year;
     int quota;
     int current_applications;
-
-    @ManyToMany(mappedBy = "quantities")
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "branchs_quantities", // Tên bảng trung gian
+            joinColumns = @JoinColumn(name = "quantity_id"), // Khóa ngoại tới Branchs
+            inverseJoinColumns = @JoinColumn(name = "branch_id") // Khóa ngoại tới Quantities
+    )
     Set<Branchs> branchs = new HashSet<>();
+    // Tùy chỉnh hashCode và equals
+
 }

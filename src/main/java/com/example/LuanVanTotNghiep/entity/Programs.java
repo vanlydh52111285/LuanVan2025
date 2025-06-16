@@ -13,10 +13,10 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "groupss")
-public class Groups {
+@Table(name = "programs")
+public class Programs {
     @Id
-    String group_id;
-    String content;
-
+    String program_id;
+    @Column(name = "program_name")
+    String programname;
 }

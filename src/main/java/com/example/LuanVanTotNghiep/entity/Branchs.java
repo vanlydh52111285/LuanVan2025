@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -17,25 +18,38 @@ import java.util.Set;
 public class Branchs {
     @Id
     String branch_id;
-    String branch_name;
-    Set<String> branch_type;
-    @ManyToMany
+    @Column(name = "branch_name")
+    String branchname;
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "branchs_groups", // Tên bảng trung gian
-            joinColumns = @JoinColumn(name = "group_id"), // Khóa ngoại tới Groups
-            inverseJoinColumns = @JoinColumn(name = "branch_id") // Khóa ngoại tới Branchs
+            name = "branchs_groups",
+            joinColumns = @JoinColumn(name = "branch_id"), // Khóa chính của Branchs
+            inverseJoinColumns = @JoinColumn(name = "group_id") // Khóa chính của Groups
     )
     Set<Groups> groups = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "branchs_quantities", // Tên bảng trung gian
-            joinColumns = @JoinColumn(name = "branch_id"), // Khóa ngoại tới Branchs
-            inverseJoinColumns = @JoinColumn(name = "quantity_id") // Khóa ngoại tới Quantities
-    )
-    Set<Quantities> quantities = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "university_id", nullable = false)
     Universities university;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "branchs_programs", // Tên bảng trung gian
+            joinColumns = @JoinColumn(name = "branch_id"), // Khóa ngoại tới Programs
+            inverseJoinColumns = @JoinColumn(name = "program_id") // Khóa ngoại tới Branchs
+    ) // Liên kết ngược lại với Programs
+    Set<Programs> programs = new HashSet<>();
+    @Override
+    public int hashCode() {
+        return Objects.hash(branch_id, branchname); // Chỉ sử dụng branch_id và branchname
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Branchs branchs = (Branchs) o;
+        return Objects.equals(branch_id, branchs.branch_id) &&
+                Objects.equals(branchname, branchs.branchname);
+    }
 }

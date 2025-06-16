@@ -91,10 +91,10 @@ public class AuthenticationService {
 
         // Tạo payload với các claims
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(users.getFullname())
-                .issuer("example.com")
+                .subject(users.getUser_id())
+                .issuer(users.getEmail())
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(24, ChronoUnit.HOURS).toEpochMilli()))
                 .claim("scope", buidScope(users))
                 .build();
 

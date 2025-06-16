@@ -31,15 +31,27 @@ public enum ErrorCode {
     UNIVERSITYFULLNAME_NOT_FOUND(1020,"Tên trường không tồn tại", HttpStatus.NOT_FOUND),
     UNIVERSITYNAME_EXISTS(1021, "Tên viết tắt trường đã tồn tại", HttpStatus.BAD_REQUEST),
     UNIVERSITYNAME_NOT_FOUND(1022, "Tên viết tắt trường không tồn tại", HttpStatus.NOT_FOUND),
-    UNIVERSITYID_EXISTS(1021, "Mã trường đã tồn tại", HttpStatus.BAD_REQUEST),
-    UNIVERSITYID_NOT_FOUND(1022, "Mã trường dùng không tồn tại", HttpStatus.NOT_FOUND),
-
+    UNIVERSITYID_EXISTS(1023, "Mã trường đã tồn tại", HttpStatus.BAD_REQUEST),
+    UNIVERSITYID_NOT_FOUND(1024, "Mã trường dùng không tồn tại", HttpStatus.NOT_FOUND),
+    BRANCHID_EXISTS(1025, "Mã hệ ngành đã tồn tại", HttpStatus.BAD_REQUEST),
+    BRANCHID_NOT_FOUND(1026, "Mã hệ ngành không tồn tại", HttpStatus.NOT_FOUND),
+    BRANCHNAME_EXISTS(1027, "Tên hệ ngành đã tồn tại", HttpStatus.BAD_REQUEST),
+    BRANCHNAME_NOT_FOUND(1028, "Tên hệ ngành không tồn tại", HttpStatus.NOT_FOUND),
+    NO_GROUPS_REMOVED(1029,"Không có tổ nào được xóa",HttpStatus.NOT_FOUND),
+    PROGRAMID_EXISTS(1030, "Mã chương trình đã tồn tại", HttpStatus.BAD_REQUEST),
+    PROGRAMID_NOT_FOUND(1031, "Mã chương trình không tồn tại", HttpStatus.NOT_FOUND),
+    PROGRAMNAME_EXISTS(1032, "Tên chương trình đã tồn tại", HttpStatus.BAD_REQUEST),
+    PROGRAMNAME_NOT_FOUND(1033, "Tên chương trình không tồn tại", HttpStatus.NOT_FOUND),
+    QUANTITY_EXISTS(1034, "Ngành tuyển theo năm đã tồn tại", HttpStatus.BAD_REQUEST),
+    QUANTITY_NOT_FOUND(1035, "Ngành tuyển theo năm không tồn tại", HttpStatus.NOT_FOUND),
+    SCHEDULE_EXISTS(1036, "Lịch tuyển đã tồn tại", HttpStatus.BAD_REQUEST),
+    SCHEDULE_NOT_FOUND(1037, "Lịch tuyển không tồn tại", HttpStatus.NOT_FOUND),
 
     // Lỗi liên quan đến dữ liệu
     DATA_NOT_FOUND(1012, "Dữ liệu không được tìm thấy", HttpStatus.NOT_FOUND),
     INVALID_DATA_FORMAT(1013, "Định dạng dữ liệu không hợp lệ", HttpStatus.BAD_REQUEST),
     DATA_CONFLICT(1014, "Dữ liệu bị xung đột", HttpStatus.CONFLICT),
-
+    INVALID_TIME_FORMAT(1038,"Thời gian tuyển không hợp lệ",HttpStatus.INTERNAL_SERVER_ERROR),
     // Lỗi liên quan đến cơ sở dữ liệu
     DATABASE_ERROR(1015, "Lỗi cơ sở dữ liệu", HttpStatus.INTERNAL_SERVER_ERROR),
     CONSTRAINT_VIOLATION(1016, "Vi phạm ràng buộc dữ liệu", HttpStatus.BAD_REQUEST);

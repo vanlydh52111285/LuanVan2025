@@ -29,6 +29,4 @@ public class Users {
     String password;
     Date created_at;
     Set<String> role;
-    @ManyToMany(mappedBy = "users")
-    Set<Shifts> shifts = new HashSet<>();
 }
