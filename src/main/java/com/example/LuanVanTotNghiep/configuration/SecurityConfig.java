@@ -26,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[]  PUBLIC_ENOPOINTS_POST={"/student/register","/auth/student/login","/auth/intro","/auth/admin/login"};
-    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups"};
+    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups", "/api/methods/getMethodById/{method_id}", "/api/methods/getAllMethods"};
     private final String[] ADMIN_POST={"/admin/create-cadre","/groups"};
     private final String[] ADMIN_GET={"/student/update-users", "/api/applications/getAllApplications"};
     private final String[] ADMIN_PUT={};

@@ -11,10 +11,10 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApplicationsRequest {
-    ApplicationTypeEnum applicationType;
+    ApplicationTypeEnum application_type;
     ApplicationEnum status;
     Integer priority;
-    Float totalScore;
+    Float total_score;
     String notes;
-    Integer methodId;
+    String methodId;
 }

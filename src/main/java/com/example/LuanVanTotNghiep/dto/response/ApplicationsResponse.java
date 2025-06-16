@@ -13,14 +13,14 @@ import java.util.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApplicationsResponse {
-    String applicationId;
-    ApplicationTypeEnum applicationType;
+    String application_id;
+    ApplicationTypeEnum application_type;
     ApplicationEnum status;
     Integer priority;
-    Float totalScore;
-    Date createDate;
-    Date updateDate;
+    Float total_score;
+    Date create_date;
+    Date update_date;
     String notes;
     String userId;
-    Integer methodId;
+    String methodId;
 }

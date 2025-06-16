@@ -17,12 +17,12 @@ import java.util.List;
 public class Methods {
 
     @Id
-    int method_id;
+    String method_id;
     String method_name;
 
     @Enumerated(EnumType.STRING)
     MethodEnum status;
 
-    @OneToMany(mappedBy = "application_id", cascade = jakarta.persistence.CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    @OneToMany(mappedBy = "admission_method", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Applications> applicationList;
 }

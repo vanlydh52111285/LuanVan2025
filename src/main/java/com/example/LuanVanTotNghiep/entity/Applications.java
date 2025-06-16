@@ -37,9 +37,12 @@ public class Applications {
     Users user;
 
     @ManyToOne
-    @JoinColumn(name = "method_id")
+    @JoinColumn(name = "method_id", nullable = false)
     Methods admission_method;
 
     @OneToMany(mappedBy = "document_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Documents> documentsList;
+
+    public Applications(String applicationId) {
+    }
 }

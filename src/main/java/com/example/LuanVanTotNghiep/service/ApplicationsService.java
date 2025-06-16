@@ -4,13 +4,14 @@ import com.example.LuanVanTotNghiep.dto.request.ApplicationsRequest;
 import com.example.LuanVanTotNghiep.dto.response.ApplicationsResponse;
 import com.example.LuanVanTotNghiep.entity.Applications;
 import com.example.LuanVanTotNghiep.entity.Documents;
+import com.example.LuanVanTotNghiep.entity.Methods;
 import com.example.LuanVanTotNghiep.entity.Users;
 import com.example.LuanVanTotNghiep.enums.ApplicationTypeEnum;
 import com.example.LuanVanTotNghiep.exception.AppException;
 import com.example.LuanVanTotNghiep.exception.ErrorCode;
 import com.example.LuanVanTotNghiep.mapper.ApplicationsMapper;
 import com.example.LuanVanTotNghiep.repository.ApplicationsRepository;
-import com.example.LuanVanTotNghiep.repository.UsersRepository;
+import com.example.LuanVanTotNghiep.repository.MethodsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,17 +43,14 @@ public class ApplicationsService {
     @Autowired
     AuthenticationService authenticationService;
 
+    @Autowired
+    MethodsRepository methodsRepository;
 
-    public String generateApplicationId(ApplicationTypeEnum type, int methodId) {
+
+    public String generateApplicationId(ApplicationTypeEnum type, String methodId) {
         String prefix = type == ApplicationTypeEnum.UNDERGRADUATE ? "DH" : "SDH";
         String year = String.valueOf(Year.now().getValue());
         int maxSequence = type == ApplicationTypeEnum.UNDERGRADUATE ? 3000 : 1000;
-
-        if (type == ApplicationTypeEnum.UNDERGRADUATE) {
-            if (methodId < 1 || methodId > 3) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
-            }
-        }
 
         String searchPattern = type == ApplicationTypeEnum.UNDERGRADUATE ? prefix + year + methodId + "%" : prefix + year + "%";
         int sequence = applicationsRepository.countByApplicationIdLike(searchPattern).intValue() + 1;
@@ -62,100 +60,124 @@ public class ApplicationsService {
         }
 
         return type == ApplicationTypeEnum.UNDERGRADUATE
-                ? String.format("%s%s%d%04d", prefix, year, methodId, sequence)
+                ? String.format("%s%s%s%04d", prefix, year, methodId, sequence)
                 : String.format("%s%s%04d", prefix, year, sequence);
     }
 
     @Transactional
     public ApplicationsResponse createApplication(ApplicationsRequest request) {
-        log.info("Received request: {}", request);
-        if (request.getApplicationType() == null || request.getStatus() == null) {
+        if (request.getApplication_type() == null || request.getStatus() == null) {
             throw new AppException(ErrorCode.INVALID_REQUEST);
         }
+
         String userId = authenticationService.getAuthenticatedUserId();
         Applications application = applicationsMapper.toCreateApplications(request);
         application.setUser(new Users(userId));
-        if (application.getApplication_type() == null) {
-            log.error("Application type is null after mapping for request: {}", request);
-            throw new AppException(ErrorCode.UNEXPECTED_ERROR);
-        }
-        if (application.getApplication_type() == ApplicationTypeEnum.UNDERGRADUATE) {
-            if (application.getAdmission_method() == null) {
+
+        String methodId;
+        if (request.getApplication_type() == ApplicationTypeEnum.UNDERGRADUATE) {
+            methodId = request.getMethodId();
+            if (methodId == null || methodId.isEmpty()) {
                 throw new AppException(ErrorCode.INVALID_REQUEST);
             }
-            int methodId = application.getAdmission_method().getMethod_id();
-            if (methodId < 1 || methodId > 3) {
+            if (!methodId.matches("^[1-3]$")) {
                 throw new AppException(ErrorCode.INVALID_REQUEST);
             }
         } else {
-            application.setAdmission_method(null);
+            methodId = "POSTGRAD";
         }
-        int methodId = application.getApplication_type() == ApplicationTypeEnum.UNDERGRADUATE ? application.getAdmission_method().getMethod_id() : 0;
-        application.setApplication_id(generateApplicationId(application.getApplication_type(), methodId));
+
+        Methods method = methodsRepository.findByMethod_id(methodId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+        application.setAdmission_method(method);
+
+        application.setApplication_id(generateApplicationId(request.getApplication_type(), methodId));
         application.setCreate_date(new Date());
-        Applications saved = applicationsRepository.saveAndFlush(application); // Flush to ensure DB write
+        Applications saved = applicationsRepository.saveAndFlush(application);
         documentsService.updateDocumentsForApplication(saved);
+
         ApplicationsResponse response = applicationsMapper.toApplicationsResponse(saved);
-        log.info("Response: {}", response);
+        response.setUserId(saved.getUser() != null ? saved.getUser().getUser_id() : null);
+        response.setMethodId(saved.getAdmission_method() != null ? saved.getAdmission_method().getMethod_id() : null);
         return response;
     }
 
     public List<ApplicationsResponse> getAllApplications() {
-        return applicationsMapper.listApplications(applicationsRepository.findAll());
+        List<Applications> applications = applicationsRepository.findAll();
+        if (applications.isEmpty()) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND);
+        }
+        return applications.stream()
+                .map(application -> {
+                    ApplicationsResponse response = applicationsMapper.toApplicationsResponse(application);
+                    response.setUserId(application.getUser() != null ? application.getUser().getUser_id() : null);
+                    response.setMethodId(application.getAdmission_method() != null ? application.getAdmission_method().getMethod_id() : null);
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 
     public List<ApplicationsResponse> getApplicationsByUserId(String userId) {
         List<Applications> applications = applicationsRepository.findByUserId(userId);
+        if (applications.isEmpty()) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND);
+        }
         return applications.stream()
-                .map(applicationsMapper::toApplicationsResponse)
+                .map(application -> {
+                    ApplicationsResponse response = applicationsMapper.toApplicationsResponse(application);
+                    response.setUserId(application.getUser() != null ? application.getUser().getUser_id() : null);
+                    response.setMethodId(application.getAdmission_method() != null ? application.getAdmission_method().getMethod_id() : null);
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public ApplicationsResponse updateApplication(String applicationId, ApplicationsRequest request) {
-        log.info("Updating application with ID: {}", applicationId);
         String userId = authenticationService.getAuthenticatedUserId();
         Applications application = applicationsRepository.findById(applicationId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTENT_NO_EXISTS));
 
-        // Kiểm tra quyền sở hữu
         if (!application.getUser().getUser_id().equals(userId)) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         applicationsMapper.updateApplications(application, request);
-        if (application.getApplication_type() == null) {
-            throw new AppException(ErrorCode.INVALID_REQUEST);
-        }
-
-        // Kiểm tra tiền tố applicationId
-        if (applicationId.startsWith("SDH")) {
-            application.setAdmission_method(null);
-        } else if (application.getApplication_type() == ApplicationTypeEnum.UNDERGRADUATE) {
-            if (application.getAdmission_method() == null) {
+        String methodId;
+        if (request.getApplication_type() == ApplicationTypeEnum.UNDERGRADUATE) {
+            methodId = request.getMethodId();
+            if (methodId == null || methodId.isEmpty()) {
                 throw new AppException(ErrorCode.INVALID_REQUEST);
             }
-            int methodId = application.getAdmission_method().getMethod_id();
-            if (methodId < 1 || methodId > 3) {
+            if (!methodId.matches("^[1-3]$")) {
                 throw new AppException(ErrorCode.INVALID_REQUEST);
             }
         } else {
-            application.setAdmission_method(null);
+            methodId = "POSTGRAD";
         }
+
+        Methods method = methodsRepository.findByMethod_id(methodId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+        application.setAdmission_method(method);
 
         application.setUpdate_date(new Date());
         Applications saved = applicationsRepository.saveAndFlush(application);
+
         ApplicationsResponse response = applicationsMapper.toApplicationsResponse(saved);
-        log.info("Updated application response: {}", response);
+        response.setUserId(saved.getUser() != null ? saved.getUser().getUser_id() : null);
+        response.setMethodId(saved.getAdmission_method() != null ? saved.getAdmission_method().getMethod_id() : null);
+
         return response;
     }
 
     @Transactional
     public void deleteApplication(String applicationId) {
-        if (!applicationsRepository.existsById(applicationId)) {
-            throw new AppException(ErrorCode.CONTENT_NO_EXISTS);
-        }
+        Applications application = applicationsRepository.findById(applicationId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTENT_NO_EXISTS));
         String userId = authenticationService.getAuthenticatedUserId();
+        if (!application.getUser().getUser_id().equals(userId)) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
         documentsService.deleteAllDocumentsByApplicationId(userId, applicationId);
         applicationsRepository.deleteById(applicationId);
     }

@@ -70,64 +70,90 @@ public class DocumentsService {
     @Transactional
     public DocumentsResponse createDocument(DocumentsRequest request, MultipartFile[] files) throws IOException {
         log.info("Tạo document với request: {}", request);
-
-        if (request.getApplicationId() != null && !applicationRepository.existsById(request.getApplicationId())) {
-            throw new AppException(ErrorCode.DATA_NOT_FOUND);
-        }
-        validateFileTypes(files);
         String userId = authenticationService.getAuthenticatedUserId();
+
+        Applications application = null;
+        if (request.getApplicationId() != null && !request.getApplicationId().isEmpty()) {
+            application = applicationRepository.findById(request.getApplicationId())
+                    .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+            if (!application.getUser().getUser_id().equals(userId)) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
+
+        validateFileTypes(files);
         Documents document = documentsMapper.toCreateDocuments(request);
         document.setUser(new Users(userId));
+        if (application != null) {
+            document.setApplication(application);
+        }
         setDocumentLinks(document, files);
         Documents saved = documentRepository.saveAndFlush(document);
-        log.info("Đã lưu document: {}", saved);
-        return documentsMapper.toDocumentsResponse(saved);
+        log.info("Đã lưu document: id={}, applicationId={}", saved.getDocument_id(), saved.getApplication() != null ? saved.getApplication().getApplication_id() : null);
+
+        DocumentsResponse response = documentsMapper.toDocumentsResponse(saved);
+        response.setApplicationId(saved.getApplication() != null ? saved.getApplication().getApplication_id() : null);
+        response.setUserId(saved.getUser() != null ? saved.getUser().getUser_id() : null);
+        log.info("Response: {}", response);
+        return response;
     }
 
     @Transactional
     public DocumentsResponse updateDocument(Integer documentId, DocumentsRequest request, MultipartFile[] files) throws IOException {
         log.info("Cập nhật document ID: {} với request: {}", documentId, request);
         String userId = authenticationService.getAuthenticatedUserId();
-        Documents document = documentRepository.findById(documentId).orElseThrow(() -> new AppException(ErrorCode.CONTENT_NO_EXISTS));
+        Documents document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTENT_NO_EXISTS));
 
-        if (request.getApplicationId() != null && !applicationRepository.existsById(request.getApplicationId())) {
-            throw new AppException(ErrorCode.DATA_NOT_FOUND);
-        }
-
-        // Kiểm tra quyền sở hữu
         if (!document.getUser().getUser_id().equals(userId)) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if (request.getApplicationId() != null && !request.getApplicationId().isEmpty()) {
+            Applications application = applicationRepository.findById(request.getApplicationId())
+                    .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+            if (!application.getUser().getUser_id().equals(userId)) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+            document.setApplication(application);
+        } else {
+            document.setApplication(null);
         }
 
         validateFileTypes(files);
         documentsMapper.updateDocuments(document, request);
         setDocumentLinks(document, files);
         Documents updated = documentRepository.saveAndFlush(document);
-        log.info("Đã cập nhật document: {}", updated);
-        return documentsMapper.toDocumentsResponse(updated);
+        log.info("Đã cập nhật document: id={}, applicationId={}", updated.getDocument_id(), updated.getApplication() != null ? updated.getApplication().getApplication_id() : null);
+
+        DocumentsResponse response = documentsMapper.toDocumentsResponse(updated);
+        response.setApplicationId(updated.getApplication() != null ? updated.getApplication().getApplication_id() : null);
+        response.setUserId(updated.getUser() != null ? updated.getUser().getUser_id() : null);
+        log.info("Response: {}", response);
+        return response;
     }
 
     @Transactional
     public void deleteDocument(Integer documentId, String userId) throws IOException {
-        log.info("Deleting document with ID: {} for userId: {}", documentId, userId);
+        log.info("Xóa document với ID: {} cho userId: {}", documentId, userId);
         Documents document = documentRepository.findByDocumentIdAndUserId(documentId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
         deleteDocumentLinks(document);
         documentRepository.delete(document);
-        log.info("Deleted document with ID: {}", documentId);
+        log.info("Đã xóa document với ID: {}", documentId);
     }
+
     public void deleteAllDocumentsByApplicationId(String userId, String applicationId) {
         List<Documents> documents = documentRepository.findByUserIdAndApplicationId(userId, applicationId);
-
         for (Documents doc : documents) {
             try {
                 deleteDocument(doc.getDocument_id(), userId);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.error("Lỗi khi xóa tài liệu ID: {}", doc.getDocument_id(), e);
+                throw new AppException(ErrorCode.UNEXPECTED_ERROR);
             }
         }
     }
-
 
     @Transactional
     public void updateDocumentsForApplication(Applications application) {
@@ -143,29 +169,52 @@ public class DocumentsService {
     }
 
     private void validateFileTypes(MultipartFile[] files) {
-        for (MultipartFile file : files) {
-            if (file != null && !file.isEmpty() && !file.getContentType().startsWith("image/")) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
+        if (files == null || files.length != 8) {
+            log.error("Số lượng file không đúng: {}", files == null ? "null" : files.length);
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+        boolean hasAtLeastOneFile = false;
+        for (int i = 0; i < files.length; i++) {
+            MultipartFile file = files[i];
+            if (file != null && !file.isEmpty()) {
+                if (!file.getContentType().startsWith("image/")) {
+                    throw new AppException(ErrorCode.INVALID_REQUEST);
+                }
+                log.info("File {}: name={}, size={}, contentType={}", i, file.getOriginalFilename(), file.getSize(), file.getContentType());
+                hasAtLeastOneFile = true;
+            } else {
+                log.info("File {} is null or empty", i);
             }
+        }
+        if (!hasAtLeastOneFile) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
         }
     }
 
     private void setDocumentLinks(Documents document, MultipartFile[] files) throws IOException {
-        document.setDocument_link_cccd(uploadFile(files[0]));
-        document.setDocument_link_hoc_ba_lop10(uploadFile(files[1]));
-        document.setDocument_link_hoc_ba_lop11(uploadFile(files[2]));
-        document.setDocument_link_hoc_ba_lop12(uploadFile(files[3]));
-        document.setDocument_link_bang_tot_nghiep_thpt(uploadFile(files[4]));
-        document.setDocument_link_ket_qua_thi_thpt(uploadFile(files[5]));
-        document.setDocument_link_ket_qua_thi_dgnl(uploadFile(files[6]));
-        document.setDocument_link_chung_chi_ngoai_ngu(uploadFile(files[7]));
+        document.setDocument_link_cccd(uploadFile(files[0], "cccd"));
+        document.setDocument_link_hoc_ba_lop10(uploadFile(files[1], "hoc_ba_lop10"));
+        document.setDocument_link_hoc_ba_lop11(uploadFile(files[2], "hoc_ba_lop11"));
+        document.setDocument_link_hoc_ba_lop12(uploadFile(files[3], "hoc_ba_lop12"));
+        document.setDocument_link_bang_tot_nghiep_thpt(uploadFile(files[4], "bang_tot_nghiep_thpt"));
+        document.setDocument_link_ket_qua_thi_thpt(uploadFile(files[5], "ket_qua_thi_thpt"));
+        document.setDocument_link_ket_qua_thi_dgnl(uploadFile(files[6], "ket_qua_thi_dgnl"));
+        document.setDocument_link_chung_chi_ngoai_ngu(uploadFile(files[7], "chung_chi_ngoai_ngu"));
     }
 
-    private String uploadFile(MultipartFile file) throws IOException {
+    private String uploadFile(MultipartFile file, String fileType) throws IOException {
         if (file == null || file.isEmpty()) {
+            log.info("File {} is null or empty, skipping upload", fileType);
             return null;
         }
-        return cloudinaryService.uploadFile(file);
+        try {
+            String url = cloudinaryService.uploadFile(file);
+            log.info("Uploaded {}: {}", fileType, url);
+            return url;
+        } catch (IOException e) {
+            log.error("Failed to upload {}: {}", fileType, e.getMessage());
+            throw new AppException(ErrorCode.UNEXPECTED_ERROR);
+        }
     }
 
     private void deleteDocumentLinks(Documents document) throws IOException {
@@ -179,8 +228,7 @@ public class DocumentsService {
                         document.getDocument_link_ket_qua_thi_thpt(),
                         document.getDocument_link_ket_qua_thi_dgnl(),
                         document.getDocument_link_chung_chi_ngoai_ngu()
-                )
-                .filter(url -> url != null && !url.isEmpty())
+                ).filter(url -> url != null && !url.isEmpty())
                 .forEach(url -> {
                     try {
                         String publicId = cloudinaryService.extractPublicIdFromUrl(url);

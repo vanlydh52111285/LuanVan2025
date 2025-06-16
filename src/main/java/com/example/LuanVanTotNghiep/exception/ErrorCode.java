@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(1003, "Thông tin đăng nhập không hợp lệ", HttpStatus.UNAUTHORIZED),
     TOKEN_EXPIRED(1004, "Token đã hết hạn", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN(1005, "Token không hợp lệ", HttpStatus.UNAUTHORIZED),
+    INVALID_STATE(2002, "Trạng thái không hợp lệ", HttpStatus.BAD_REQUEST),
 
     // Lỗi liên quan đến người dùng
     USERNAME_EXISTS(1006, "Tên người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
@@ -40,6 +41,7 @@ public enum ErrorCode {
     DATA_NOT_FOUND(1012, "Dữ liệu không được tìm thấy", HttpStatus.NOT_FOUND),
     INVALID_DATA_FORMAT(1013, "Định dạng dữ liệu không hợp lệ", HttpStatus.BAD_REQUEST),
     DATA_CONFLICT(1014, "Dữ liệu bị xung đột", HttpStatus.CONFLICT),
+    DATA_ALREADY_EXISTS(2001, "Dữ liệu đã tồn tại", HttpStatus.BAD_REQUEST),
 
     // Lỗi liên quan đến cơ sở dữ liệu
     DATABASE_ERROR(1015, "Lỗi cơ sở dữ liệu", HttpStatus.INTERNAL_SERVER_ERROR),
