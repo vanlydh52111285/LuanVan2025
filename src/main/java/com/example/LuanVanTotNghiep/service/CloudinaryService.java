@@ -2,8 +2,10 @@ package com.example.LuanVanTotNghiep.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,9 +14,10 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CloudinaryService {
-    @Autowired
-    private Cloudinary cloudinary;
+    Cloudinary cloudinary;
 
     // Upload file lên Cloudinary
     public String uploadFile(MultipartFile file) throws IOException {

@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,4 +41,12 @@ public class Users {
         super();
         this.user_id = userId;
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_notifications",
+            joinColumns = @JoinColumn(name = "notification_id"), // Khóa chính của Notifications
+            inverseJoinColumns = @JoinColumn(name = "user_id") // Khóa chính của Users
+    )
+    Set<Notifications> notifications = new HashSet<>();
 }

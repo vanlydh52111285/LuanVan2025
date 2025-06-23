@@ -26,11 +26,12 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[]  PUBLIC_ENOPOINTS_POST={"/student/register","/auth/student/login","/auth/intro","/auth/admin/login"};
-    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups","/university","/api/excel/download","/branch","/program", "/api/methods/getMethodById/{method_id}", "/api/methods/getAllMethods"};
-    private final String[] ADMIN_POST={"/admin/create-cadre","/groups","/university","/branch","/create-branch-group","/program","/quantity"};
+    private final String[]  PUBLIC_ENOPOINTS_PUT={"/notifications/read/{notification_id}"};
+    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups","/university","/api/excel/download","/branch","/program", "/api/methods/getMethodById/{method_id}", "/api/methods/getAllMethods", "/notifications/mark-read/{notification_id}", "/provinces/all","/provinces/province/{province_id}", "/districts/all", "/districts/province/{province_id}", "/schools/all", "/schools/province/{province_id}",};
+    private final String[] ADMIN_POST={"/admin/create-cadre","/groups","/university","/branch","/create-branch-group","/program","/quantity", "/notifications/create", "/api/applications/create", "/provinces/import", "/provinces/create","/districts/create", "/districts/import", "shools/import", "schools/create"};
     private final String[] ADMIN_GET={"/student/update-users","/quantity", "/api/applications/getAllApplications"};
     private final String[] ADMIN_PUT={};
-    private final String[] ADMIN_DELETE={"/admin/users/{id}","/delete-branch-group"};
+    private final String[] ADMIN_DELETE={"/admin/users/{id}","/delete-branch-group", "/notifications/delete/{notification_id}"};
     private final String[] CADRE_POST={};
     private final String[] CADRE_GET={"/api/applications/getAllApplications"};
     private final String[] CADRE_PUT={};
@@ -50,6 +51,7 @@ public class SecurityConfig {
                 request ->
                         request.requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS_POST).permitAll()
                                 .requestMatchers(HttpMethod.GET,PUBLIC_ENOPOINTS_GET).permitAll()
+                                .requestMatchers(HttpMethod.PUT,PUBLIC_ENOPOINTS_PUT).permitAll()
                                 .requestMatchers(HttpMethod.POST,ADMIN_POST).hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET,ADMIN_GET).hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT,ADMIN_PUT).hasRole("ADMIN")
