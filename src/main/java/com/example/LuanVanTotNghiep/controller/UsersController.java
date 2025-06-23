@@ -3,8 +3,12 @@ package com.example.LuanVanTotNghiep.controller;
 import com.example.LuanVanTotNghiep.dto.request.UsersRequest;
 import com.example.LuanVanTotNghiep.dto.response.ApiResponse;
 import com.example.LuanVanTotNghiep.dto.response.UsersResponse;
+import com.example.LuanVanTotNghiep.service.AuthenticationService;
 import com.example.LuanVanTotNghiep.service.UsersService;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +17,12 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UsersController {
-    @Autowired
-    private UsersService usersService;
+    UsersService usersService;
+    AuthenticationService authenticationService;
+
     @PostMapping("/student/register")
     ApiResponse<UsersResponse> register (@RequestBody @Valid UsersRequest request){
         ApiResponse<UsersResponse> apiResponse = new ApiResponse<>();
@@ -45,6 +52,14 @@ public class UsersController {
     ApiResponse<List<UsersResponse>> getAllUsers(){
         ApiResponse<List<UsersResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(usersService.getAllUsers());
+        return apiResponse;
+    }
+
+    @GetMapping("/user/get-user-profile")
+    ApiResponse<UsersResponse> getUserById() {
+        String id = authenticationService.getAuthenticatedUserId();
+        ApiResponse<UsersResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(usersService.getUsers(id));
         return apiResponse;
     }
 }

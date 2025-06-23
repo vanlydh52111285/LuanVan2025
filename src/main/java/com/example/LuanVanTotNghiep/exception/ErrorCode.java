@@ -23,7 +23,7 @@ public enum ErrorCode {
 
     // Lỗi liên quan đến người dùng
     USERNAME_EXISTS(1006, "Tên người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
-    USERNAME_NOT_FOUND(1007, "Tên người dùng không tồn tại", HttpStatus.NOT_FOUND),
+    USERNAME_NOT_FOUND(1007, "Email không tồn tại", HttpStatus.NOT_FOUND),
     INVALID_USERNAME(1008, "Tên người dùng không hợp lệ (ít nhất 3 ký tự)", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(1009, "Mật khẩu không hợp lệ (ít nhất 6 ký tự)", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTS(1010, "Email đã tồn tại", HttpStatus.BAD_REQUEST),
@@ -49,6 +49,7 @@ public enum ErrorCode {
     QUANTITY_NOT_FOUND(1035, "Ngành tuyển theo năm không tồn tại", HttpStatus.NOT_FOUND),
     SCHEDULE_EXISTS(1036, "Lịch tuyển đã tồn tại", HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_FOUND(1037, "Lịch tuyển không tồn tại", HttpStatus.NOT_FOUND),
+    INVALID_PASSWORD_LOGIN(2200, "Mật khẩu đăng nhập không đúng", HttpStatus.BAD_REQUEST),
 
     // Lỗi liên quan đến dữ liệu
     DATA_NOT_FOUND(1012, "Dữ liệu không được tìm thấy", HttpStatus.NOT_FOUND),
