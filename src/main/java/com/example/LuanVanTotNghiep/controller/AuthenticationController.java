@@ -27,15 +27,17 @@ public class AuthenticationController {
     @PostMapping("/admin/login")
     ApiResponse<AuthenticationResponse> authenticateAdmin(@RequestBody AuthenticationRequest request){
         var result=authenticationService.authenticationResponse(request);
-        return ApiResponse.<AuthenticationResponse>builder().
-                result(result)
-                .build();
+        return ApiResponse.<AuthenticationResponse>builder()
+                .code(1000)
+                        .result(result)
+                        .build();
     }
     @PostMapping("/cadre/login")
     ApiResponse<AuthenticationResponse> authenticateCadre(@RequestBody AuthenticationRequest request){
         var result=authenticationService.authenticationResponse(request);
         return ApiResponse.<AuthenticationResponse>builder().
                 result(result)
+                .code(1000)
                 .build();
     }
     @PostMapping("/student/login")
@@ -43,6 +45,7 @@ public class AuthenticationController {
         var result=authenticationService.authenticationResponse(request);
         return ApiResponse.<AuthenticationResponse>builder().
                 result(result)
+                .code(1000)
                 .build();
     }
     @PostMapping("/intro")
@@ -50,6 +53,7 @@ public class AuthenticationController {
         var result=authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder().
                 result(result)
+                .code(1000)
                 .build();
     }
 }

@@ -1,10 +1,10 @@
 package com.example.LuanVanTotNghiep.controller;
 
+import com.cloudinary.Api;
 import com.example.LuanVanTotNghiep.dto.request.BranchsRequest;
 import com.example.LuanVanTotNghiep.dto.request.Branchs_GroupsRequest;
-import com.example.LuanVanTotNghiep.dto.response.ApiResponse;
-import com.example.LuanVanTotNghiep.dto.response.BranchsResponse;
-import com.example.LuanVanTotNghiep.dto.response.Branchs_GroupsResponse;
+import com.example.LuanVanTotNghiep.dto.request.Branchs_ProgramsRequest;
+import com.example.LuanVanTotNghiep.dto.response.*;
 import com.example.LuanVanTotNghiep.service.BranchsService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +25,8 @@ public class BranchsController {
         return apiResponse;
     }
     @GetMapping("/branch")
-    ApiResponse<List<BranchsResponse>> getAllBranchs(){
-        ApiResponse<List<BranchsResponse>> apiResponse = new ApiResponse<>();
+    ApiResponse<List<Branchs_Entity_Response>> getAllBranchs(){
+        ApiResponse<List<Branchs_Entity_Response>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(branchsService.getAllBranchs());
         return apiResponse;
     }
@@ -36,11 +36,41 @@ public class BranchsController {
         apiResponse.setResult(branchsService.createBranchs_Groups(request));
         return apiResponse;
     }
-    @DeleteMapping("/delete-branch-group")
-    ApiResponse<String> deleteBranchs_Groups(@RequestBody @Valid Branchs_GroupsRequest request){
-        branchsService.deleteBranch_Groups(request);
-        ApiResponse<String> apiResponse =new ApiResponse<>();
-        apiResponse.setResult("success");
+//    @DeleteMapping("/delete-branch-group")
+//    ApiResponse<String> deleteBranchs_Groups(@RequestBody @Valid Branchs_GroupsRequest request){
+//        branchsService.deleteBranch_Groups(request);
+//        ApiResponse<String> apiResponse =new ApiResponse<>();
+//        apiResponse.setResult("success");
+//        return apiResponse;
+//    }
+    @PostMapping("/create-branch-program")
+    ApiResponse<Branchs_ProgramsResponse> createBranchs_Programs(@RequestBody @Valid Branchs_ProgramsRequest request){
+        ApiResponse<Branchs_ProgramsResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(branchsService.createBranchProgram(request));
+        return apiResponse;
+    }
+    @GetMapping("/groups-by-branch/{branch_id}")
+    ApiResponse<List<GroupsResponse>> getGroupsByBranch(@PathVariable String branch_id){
+        ApiResponse<List<GroupsResponse>>apiResponse = new ApiResponse<>();
+        apiResponse.setResult(branchsService.getGroupsByBranch(branch_id));
+        return apiResponse;
+    }
+    @GetMapping("/programs-by-branch/{branch_id}")
+    ApiResponse<List<ProgramsResponse>> getProgramsByBranch(@PathVariable String branch_id){
+        ApiResponse<List<ProgramsResponse>>apiResponse = new ApiResponse<>();
+        apiResponse.setResult(branchsService.getProgramsByBranch(branch_id));
+        return apiResponse;
+    }
+    @GetMapping("/branchs-by-program/{program_id}")
+    ApiResponse<List<Branchs_Entity_Response>> getBranchsByProgram(@PathVariable String program_id){
+        ApiResponse<List<Branchs_Entity_Response>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(branchsService.getBranchsByProgram(program_id));
+        return apiResponse;
+    }
+    @GetMapping("/branch-by-group-program")
+    ApiResponse<List<Branchs_ProgramsResponse>> getBranchsByGoupsAndPrograms(){
+        ApiResponse<List<Branchs_ProgramsResponse>> apiResponse= new ApiResponse<>();
+        apiResponse.setResult(branchsService.getBranchsByGroupsAndPrograms());
         return apiResponse;
     }
 }

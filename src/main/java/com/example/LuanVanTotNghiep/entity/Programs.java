@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +16,5 @@ public class Programs {
     String program_id;
     @Column(name = "program_name")
     String programname;
+    boolean type;
 }

@@ -31,4 +31,10 @@ public class ProgramsController {
         apiResponse.setResult(programsService.getAllPrograms());
         return apiResponse;
     }
+    @GetMapping("/program-true")
+    ApiResponse<List<ProgramsResponse>> getAllProgramsTrue(){
+        ApiResponse<List<ProgramsResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(programsService.getAllProgramsTrue());
+        return apiResponse;
+    }
 }

@@ -1,6 +1,5 @@
-package com.example.LuanVanTotNghiep.entity;
+package com.example.LuanVanTotNghiep.dto.request;
 
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,13 +11,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-@Table(name = "schedules")
-public class Schedules {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+public class SchedulesRequest {
     String schedule_id;
-    @Column(name = "schedule_name")
     String schedulename;
     Date star_time;
     Date end_time;

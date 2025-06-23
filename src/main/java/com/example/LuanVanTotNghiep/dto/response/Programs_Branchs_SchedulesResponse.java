@@ -8,8 +8,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProgramsResponse {
-    String program_id;
-    String programname;
-    boolean type;
+public class Programs_Branchs_SchedulesResponse {
+    String pbs_id;
+    SchedulesResponse schedulesResponse;
+    Branchs_Entity_Response branchsEntityResponse;
+    ProgramsResponse programsResponse;
 }

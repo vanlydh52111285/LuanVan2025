@@ -1,5 +1,6 @@
 package com.example.LuanVanTotNghiep.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,5 +11,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GroupsRequest {
     String group_id;
-    String content;
+    String groupname;
+    String sub1;
+    String sub2;
+    String sub3;
+    boolean type;
+
 }

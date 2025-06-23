@@ -48,7 +48,13 @@ public enum ErrorCode {
     QUANTITY_NOT_FOUND(1035, "Ngành tuyển theo năm không tồn tại", HttpStatus.NOT_FOUND),
     SCHEDULE_EXISTS(1036, "Lịch tuyển đã tồn tại", HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_FOUND(1037, "Lịch tuyển không tồn tại", HttpStatus.NOT_FOUND),
-
+    SCHEDULENAME_EXISTS(1039, "Tên đợt tuyển đã tồn tại", HttpStatus.BAD_REQUEST),
+    SCHEDULENAME_NOT_FOUND(1040, "Tên đợt tuyển không tồn tại", HttpStatus.NOT_FOUND),
+    GROUP_EXISTS(1041, "Mã tổ hợp đã tồn tại", HttpStatus.BAD_REQUEST),
+    GROUP_NO_EXISTS(1042, "Mã tổ hợp không tồn tại", HttpStatus.BAD_REQUEST),
+    INVALID_ENTITY(1043,"Các thực thể không đầy đủ",HttpStatus.BAD_REQUEST),
+    INVALID_TIME_RANGE(1044,"Khoản thời gian không hợp lệ",HttpStatus.BAD_REQUEST),
+    INVALID_START_TIME(1045,"Mốc thời gian không hợp lệ",HttpStatus.BAD_REQUEST),
     // Lỗi liên quan đến dữ liệu
     DATA_NOT_FOUND(1012, "Dữ liệu không được tìm thấy", HttpStatus.NOT_FOUND),
     INVALID_DATA_FORMAT(1013, "Định dạng dữ liệu không hợp lệ", HttpStatus.BAD_REQUEST),

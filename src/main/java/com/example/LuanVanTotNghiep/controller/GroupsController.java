@@ -7,10 +7,7 @@ import com.example.LuanVanTotNghiep.service.GroupsService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +26,25 @@ public class GroupsController {
     ApiResponse<List<GroupsResponse>> getAllGroups(){
         ApiResponse<List<GroupsResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(groupsService.getAllGroups());
+        return apiResponse;
+    }
+    @DeleteMapping("/groups/{id}")
+    ApiResponse<String> deleteGroup(@PathVariable String id){
+        groupsService.deleteGroups(id);
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setResult("success");
+        return apiResponse;
+    }
+    @PutMapping("/groups/{id}")
+    ApiResponse<GroupsResponse> updateGroup(@PathVariable String id,@RequestBody GroupsRequest request){
+        ApiResponse<GroupsResponse> apiResponse =new ApiResponse<>();
+        apiResponse.setResult(groupsService.updateGroups(id,request));
+        return apiResponse;
+    }
+    @GetMapping("/groups-true")
+    ApiResponse<List<GroupsResponse>> getAllGroupsTrue(){
+        ApiResponse<List<GroupsResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(groupsService.getAllGroupsTrue());
         return apiResponse;
     }
 }
