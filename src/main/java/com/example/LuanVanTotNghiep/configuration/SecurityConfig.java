@@ -25,6 +25,53 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    private final String[]  PUBLIC_ENOPOINTS_POST={
+
+            "/student/register","/auth/student/login",
+            "/auth/intro","/auth/admin/login"};
+    private final String[]  PUBLIC_ENOPOINTS_GET={
+            "/notifications/mark-read/{notification_id}", "/provinces/all",
+            "/provinces/province/{province_id}", "/districts/all",
+            "/districts/province/{province_id}", "/schools/all",
+            "/schools/province/{province_id}",
+            "/program-true","/groups-true",
+            "/schedules","/list-pbs/{schedule_id}",
+            "/branch-by-group-program","/branchs-by-program/{program_id}",
+            "/programs-by-branch/{branch_id}","/groups-by-branch/{branch_id}",
+            "/groups","/university",
+            "/api/excel/download","/branch",
+            "/program", "/api/methods/getMethodById/{method_id}",
+            "/api/methods/getAllMethods"
+    };
+    private final String[] ADMIN_POST={
+            "/create-list-pbs","/schedule",
+            "/create-branch-program","/admin/create-cadre",
+            "/groups","/university",
+            "/branch","/create-branch-group",
+            "/program","/admin/create-cadre",
+            "/notifications/create", "/api/applications/create",
+            "/provinces/import", "/provinces/create",
+            "/districts/create", "/districts/import",
+            "shools/import", "schools/create"
+
+    };
+    private final String[] ADMIN_GET={
+            "/student/update-users", "/api/applications/getAllApplications",
+
+
+    };
+    private final String[] ADMIN_PUT={
+            "/groups/{id}"
+    };
+    private final String[] ADMIN_DELETE={
+            "/groups/{id}","/admin/users/{id}",
+            "/delete-branch-group","/notifications/delete/{notification_id}",
+
+};
+    private final String[]  PUBLIC_ENOPOINTS_PUT={
+            "/notifications/read/{notification_id}"
+    };
+
     private final String[]  PUBLIC_ENOPOINTS_POST={"/student/register","/auth/student/login","/auth/intro","/auth/admin/login"};
     private final String[]  PUBLIC_ENOPOINTS_PUT={"/notifications/read/{notification_id}"};
     private final String[]  PUBLIC_ENOPOINTS_GET={"/groups","/university","/api/excel/download","/branch","/program", "/api/methods/getMethodById/{method_id}", "/api/methods/getAllMethods", "/notifications/mark-read/{notification_id}", "/provinces/all","/provinces/province/{province_id}", "/districts/all", "/districts/province/{province_id}", "/schools/all", "/schools/province/{province_id}",};
@@ -49,7 +96,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.authorizeHttpRequests(
                 request ->
-                        request.requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS_POST).permitAll()
+                        request
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS_POST).permitAll()
                                 .requestMatchers(HttpMethod.GET,PUBLIC_ENOPOINTS_GET).permitAll()
                                 .requestMatchers(HttpMethod.PUT,PUBLIC_ENOPOINTS_PUT).permitAll()
                                 .requestMatchers(HttpMethod.POST,ADMIN_POST).hasRole("ADMIN")

@@ -1,4 +1,4 @@
-package com.example.LuanVanTotNghiep.dto.response;
+package com.example.LuanVanTotNghiep.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +8,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProgramsResponse {
+public class Programs_Branchs_SchedulesRequest {
+    String pbs_id;
     String program_id;
-    String programname;
-    boolean type;
+    String branch_id;
+    String schedule_id;
 }

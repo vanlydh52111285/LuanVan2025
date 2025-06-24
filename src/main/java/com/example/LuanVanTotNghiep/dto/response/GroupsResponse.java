@@ -12,6 +12,9 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GroupsResponse {
     String group_id;
-    String content;
-
+    String groupname;
+    String sub1;
+    String sub2;
+    String sub3;
+    boolean type;
 }

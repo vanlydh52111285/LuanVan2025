@@ -1,21 +1,16 @@
 package com.example.LuanVanTotNghiep.dto.response;
-
-import com.example.LuanVanTotNghiep.entity.Groups;
-import com.example.LuanVanTotNghiep.entity.Universities;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.Set;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BranchsResponse {
+public class Branchs_Entity_Response {
     String branch_id;
     String branchname;
     boolean type;
-    UniversitiesResponse universityResponse;
-
 }

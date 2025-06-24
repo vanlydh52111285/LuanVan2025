@@ -49,6 +49,13 @@ public enum ErrorCode {
     QUANTITY_NOT_FOUND(1035, "Ngành tuyển theo năm không tồn tại", HttpStatus.NOT_FOUND),
     SCHEDULE_EXISTS(1036, "Lịch tuyển đã tồn tại", HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_FOUND(1037, "Lịch tuyển không tồn tại", HttpStatus.NOT_FOUND),
+    SCHEDULENAME_EXISTS(1039, "Tên đợt tuyển đã tồn tại", HttpStatus.BAD_REQUEST),
+    SCHEDULENAME_NOT_FOUND(1040, "Tên đợt tuyển không tồn tại", HttpStatus.NOT_FOUND),
+    GROUP_EXISTS(1041, "Mã tổ hợp đã tồn tại", HttpStatus.BAD_REQUEST),
+    GROUP_NO_EXISTS(1042, "Mã tổ hợp không tồn tại", HttpStatus.BAD_REQUEST),
+    INVALID_ENTITY(1043,"Các thực thể không đầy đủ",HttpStatus.BAD_REQUEST),
+    INVALID_TIME_RANGE(1044,"Khoản thời gian không hợp lệ",HttpStatus.BAD_REQUEST),
+    INVALID_START_TIME(1045,"Mốc thời gian không hợp lệ",HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD_LOGIN(2200, "Mật khẩu đăng nhập không đúng", HttpStatus.BAD_REQUEST),
 
     // Lỗi liên quan đến dữ liệu
@@ -59,6 +66,8 @@ public enum ErrorCode {
     INVALID_INPUT(2300, "Dữ liệu đầu vào không hợp lệ", HttpStatus.BAD_REQUEST),
 
     INVALID_TIME_FORMAT(1038,"Thời gian tuyển không hợp lệ",HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_TIME_SCHEDULE(1046,"Đang trong thời gian tuyển sinh, không thể thực hiện thao tác",HttpStatus.INTERNAL_SERVER_ERROR),
+
     // Lỗi liên quan đến cơ sở dữ liệu
     DATABASE_ERROR(1015, "Lỗi cơ sở dữ liệu", HttpStatus.INTERNAL_SERVER_ERROR),
     CONSTRAINT_VIOLATION(1016, "Vi phạm ràng buộc dữ liệu", HttpStatus.BAD_REQUEST);

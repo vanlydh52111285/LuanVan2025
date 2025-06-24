@@ -17,6 +17,10 @@ import java.util.Set;
 public class Groups {
     @Id
     String group_id;
-    String content;
-
+    @Column(name = "group_name")
+    String groupname;
+    String sub1;
+    String sub2;
+    String sub3;
+    boolean type;
 }

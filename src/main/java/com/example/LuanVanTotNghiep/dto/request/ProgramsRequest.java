@@ -11,4 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class ProgramsRequest {
     String program_id;
     String programname;
+    boolean type;
 }
