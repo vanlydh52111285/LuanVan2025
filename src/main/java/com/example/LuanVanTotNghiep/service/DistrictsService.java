@@ -9,6 +9,7 @@ import com.example.LuanVanTotNghiep.exception.ErrorCode;
 import com.example.LuanVanTotNghiep.mapper.DistrictsMapper;
 import com.example.LuanVanTotNghiep.repository.DistrictsRepository;
 import com.example.LuanVanTotNghiep.repository.ProvincesRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +30,7 @@ public class DistrictsService {
     DistrictsRepository districtsRepository;
     DistrictsMapper districtsMapper;
     ProvincesRepository provincesRepository;
-    ProvincesService provincesService;
+    ConvertService convertService;
 
     public List<DistrictsResponse> getAllDistricts() {
         List<Districts> districts = districtsRepository.findAll();
@@ -56,6 +57,7 @@ public class DistrictsService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional
     public DistrictsResponse createDistrict(DistrictsRequest request) {
         if (request.getDistrict_id() == null || request.getDistrict_id().trim().isEmpty()) {
             throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
@@ -83,6 +85,7 @@ public class DistrictsService {
         return response;
     }
 
+    @Transactional
     public List<DistrictsResponse> importDistrictsFromExcel(MultipartFile file) {
         if (file.isEmpty()) {
             throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
@@ -107,8 +110,8 @@ public class DistrictsService {
                     continue; // Bỏ qua dòng trống
                 }
 
-                String provinceId = provincesService.getCellValueAsString(row.getCell(0));
-                String districtId = provincesService.getCellValueAsString(row.getCell(2));
+                String provinceId = convertService.convertToString(row.getCell(0));
+                String districtId = convertService.convertToString(row.getCell(2));
                 String districtName = row.getCell(3).getStringCellValue().trim();
 
                 if (!provincesRepository.existsById(provinceId)) {

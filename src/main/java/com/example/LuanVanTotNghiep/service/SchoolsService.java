@@ -9,6 +9,7 @@ import com.example.LuanVanTotNghiep.exception.ErrorCode;
 import com.example.LuanVanTotNghiep.mapper.SchoolsMapper;
 import com.example.LuanVanTotNghiep.repository.ProvincesRepository;
 import com.example.LuanVanTotNghiep.repository.SchoolsRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +30,7 @@ public class SchoolsService {
     SchoolsRepository schoolsRepository;
     SchoolsMapper schoolsMapper;
     ProvincesRepository provincesRepository;
-    ProvincesService provincesService;
+    ConvertService convertService;
 
     public List<SchoolsResponse> getAllSchools() {
         List<Schools> schools = schoolsRepository.findAll();
@@ -52,6 +53,7 @@ public class SchoolsService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional
     public List<SchoolsResponse> importSchoolsFromExcel(MultipartFile file) {
         if (file.isEmpty()) {
             throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
@@ -76,8 +78,8 @@ public class SchoolsService {
                     continue; // Bỏ qua dòng trống
                 }
 
-                String provinceId = provincesService.getCellValueAsString(row.getCell(0));
-                String schoolId = provincesService.getCellValueAsString(row.getCell(2));
+                String provinceId = convertService.convertToString(row.getCell(0));
+                String schoolId = convertService.convertToString(row.getCell(2));
                 String schoolName = row.getCell(3).getStringCellValue().trim();
 
                 if (!provincesRepository.existsById(provinceId)) {
@@ -120,6 +122,7 @@ public class SchoolsService {
         }
     }
 
+    @Transactional
     public SchoolsResponse createSchool(SchoolsRequest request) {
         if (request.getSchool_id() == null || request.getSchool_id().trim().isEmpty()) {
             throw new AppException(ErrorCode.REQUEST_IS_EMPTY);

@@ -8,6 +8,7 @@ import com.example.LuanVanTotNghiep.exception.AppException;
 import com.example.LuanVanTotNghiep.exception.ErrorCode;
 import com.example.LuanVanTotNghiep.mapper.ProvincesMapper;
 import com.example.LuanVanTotNghiep.repository.ProvincesRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class ProvincesService {
     ProvincesRepository provincesRepository;
     ProvincesMapper provincesMapper;
+    ConvertService convertService;
 
     public List<ProvincesResponse> getAllProvinces() {
         List<Provinces> provincesList = provincesRepository.findAll();
@@ -41,6 +43,7 @@ public class ProvincesService {
         return provincesMapper.toProvinceResponse(province);
     }
 
+    @Transactional
     public ProvincesResponse createProvince(ProvincesRequest request) {
         if (request.getProvince_id() == null || request.getProvince_id().trim().isEmpty()) {
             throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
@@ -58,6 +61,7 @@ public class ProvincesService {
         return provincesMapper.toProvinceResponse(savedProvince);
     }
 
+    @Transactional
     public List<ProvincesResponse> importProvincesFromExcel(MultipartFile file) {
         if (file.isEmpty()) {
             throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
@@ -81,7 +85,7 @@ public class ProvincesService {
                     continue; // Bỏ qua dòng trống
                 }
 
-                String provinceId = getCellValueAsString(row.getCell(0));
+                String provinceId = convertService.convertToString(row.getCell(0));
                 String provinceName = row.getCell(1).getStringCellValue().trim();
 
                 if (existingProvinceIds.contains(provinceId)) {
@@ -109,15 +113,5 @@ public class ProvincesService {
         }
     }
 
-    public String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return "";
-        }
-        return switch (cell.getCellType()) {
-            case STRING -> cell.getStringCellValue().trim();
-            case NUMERIC -> String.valueOf((int) cell.getNumericCellValue()).trim(); // Chuyển số thành chuỗi
-            case BLANK -> "";
-            default -> throw new AppException(ErrorCode.INVALID_INPUT);
-        };
-    }
+
 }

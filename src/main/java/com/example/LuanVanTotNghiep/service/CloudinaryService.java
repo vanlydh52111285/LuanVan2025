@@ -2,6 +2,7 @@ package com.example.LuanVanTotNghiep.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +21,7 @@ public class CloudinaryService {
     Cloudinary cloudinary;
 
     // Upload file lên Cloudinary
+    @Transactional
     public String uploadFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Ảnh không được để trống");
@@ -29,6 +31,7 @@ public class CloudinaryService {
     }
 
     // Xóa file trên Cloudinary dựa trên public_id
+    @Transactional
     public Map deleteFile(String publicId) throws IOException {
         if (publicId != null) {
             log.info("Deleting Cloudinary file with publicId: {}", publicId);
@@ -40,6 +43,7 @@ public class CloudinaryService {
 
 
     // Trích xuất public_id từ URL Cloudinary
+    @Transactional
     public String extractPublicIdFromUrl(String url) {
         try {
             // Bỏ domain & phần "/upload/"

@@ -125,6 +125,7 @@ public class DocumentsService {
         log.info("Đã xóa document với ID: {}", documentId);
     }
 
+    @Transactional
     public void deleteAllDocumentsByApplicationId(String userId, String applicationId) {
         List<Documents> documents = documentRepository.findByUserIdAndApplicationId(userId, applicationId);
         for (Documents doc : documents) {
