@@ -12,17 +12,18 @@ public enum ErrorCode {
     //UNEXPECTED_ERROR(1000, "Lỗi không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_REQUEST(1001, "Yêu cầu không hợp lệ", HttpStatus.BAD_REQUEST),
     UNEXPECTED_ERROR(1017, "Lỗi không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
+    REQUEST_IS_EMPTY(2001, "Yêu cầu không được để trống", HttpStatus.BAD_REQUEST),
 
     // Lỗi liên quan đến xác thực
     UNAUTHORIZED(1002, "Không được phép truy cập", HttpStatus.UNAUTHORIZED),
     INVALID_CREDENTIALS(1003, "Thông tin đăng nhập không hợp lệ", HttpStatus.UNAUTHORIZED),
     TOKEN_EXPIRED(1004, "Token đã hết hạn", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN(1005, "Token không hợp lệ", HttpStatus.UNAUTHORIZED),
-    INVALID_STATE(2002, "Trạng thái không hợp lệ", HttpStatus.BAD_REQUEST),
+    INVALID_STATE(2100, "Trạng thái không hợp lệ", HttpStatus.BAD_REQUEST),
 
     // Lỗi liên quan đến người dùng
     USERNAME_EXISTS(1006, "Tên người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
-    USERNAME_NOT_FOUND(1007, "Tên người dùng không tồn tại", HttpStatus.NOT_FOUND),
+    USERNAME_NOT_FOUND(1007, "Email không tồn tại", HttpStatus.NOT_FOUND),
     INVALID_USERNAME(1008, "Tên người dùng không hợp lệ (ít nhất 3 ký tự)", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(1009, "Mật khẩu không hợp lệ (ít nhất 6 ký tự)", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTS(1010, "Email đã tồn tại", HttpStatus.BAD_REQUEST),
@@ -55,11 +56,14 @@ public enum ErrorCode {
     INVALID_ENTITY(1043,"Các thực thể không đầy đủ",HttpStatus.BAD_REQUEST),
     INVALID_TIME_RANGE(1044,"Khoản thời gian không hợp lệ",HttpStatus.BAD_REQUEST),
     INVALID_START_TIME(1045,"Mốc thời gian không hợp lệ",HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_LOGIN(2200, "Mật khẩu đăng nhập không đúng", HttpStatus.BAD_REQUEST),
+
     // Lỗi liên quan đến dữ liệu
     DATA_NOT_FOUND(1012, "Dữ liệu không được tìm thấy", HttpStatus.NOT_FOUND),
     INVALID_DATA_FORMAT(1013, "Định dạng dữ liệu không hợp lệ", HttpStatus.BAD_REQUEST),
     DATA_CONFLICT(1014, "Dữ liệu bị xung đột", HttpStatus.CONFLICT),
     DATA_ALREADY_EXISTS(2001, "Dữ liệu đã tồn tại", HttpStatus.BAD_REQUEST),
+    INVALID_INPUT(2300, "Dữ liệu đầu vào không hợp lệ", HttpStatus.BAD_REQUEST),
 
     INVALID_TIME_FORMAT(1038,"Thời gian tuyển không hợp lệ",HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_TIME_SCHEDULE(1046,"Đang trong thời gian tuyển sinh, không thể thực hiện thao tác",HttpStatus.INTERNAL_SERVER_ERROR),

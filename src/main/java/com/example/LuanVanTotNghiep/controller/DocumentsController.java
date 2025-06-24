@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,16 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DocumentsController {
-    @Autowired
     DocumentsService documentService;
-
-    @Autowired
     ApplicationsService applicationService;
-
-    @Autowired
     DocumentsMapper documentsMapper;
-
-    @Autowired
     AuthenticationService authenticationService;
 
     @GetMapping("/images")

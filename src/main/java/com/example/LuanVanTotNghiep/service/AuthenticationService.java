@@ -73,7 +73,7 @@ public class AuthenticationService {
 
         // Ném ngoại lệ nếu mật khẩu không khớp
         if(!auth){
-            throw new AppException(ErrorCode.DATABASE_ERROR);
+            throw new AppException(ErrorCode.INVALID_PASSWORD_LOGIN);
         }
 
         // Tạo JWT cho người dùng

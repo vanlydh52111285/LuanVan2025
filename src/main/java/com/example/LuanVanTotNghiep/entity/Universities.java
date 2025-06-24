@@ -40,4 +40,7 @@ public class Universities {
         return Objects.equals(university_id, that.university_id) &&
                 Objects.equals(universityname, that.universityname);
     }
+
+    @OneToMany(mappedBy = "university", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Methods> methods = new HashSet<>();
 }
