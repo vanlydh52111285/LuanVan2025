@@ -25,7 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
     //=====================PUBLIC_ENOPOINTS_GET=====================
-    private final String[]  PUBLIC_ENOPOINTS_GET={
+    private final String[]  PUBLIC_ENDPOINTS_GET={
             "/notifications/mark-read/{notification_id}", "/provinces/all",
             "/provinces/province/{province_id}", "/districts/all",
             "/districts/province/{province_id}", "/schools/all",
@@ -39,10 +39,10 @@ public class SecurityConfig {
             "/program", "/api/methods/getMethodById/{method_id}",
             "/api/methods/getAllMethods"
     };
-    private final String[]  PUBLIC_ENOPOINTS_POST={
+    private final String[]  PUBLIC_ENDPOINTS_POST={
             "/student/register","/auth/student/login",
             "/auth/intro","/auth/admin/login"};
-    private final String[]  PUBLIC_ENOPOINTS_PUT={
+    private final String[]  PUBLIC_ENDPOINTS_PUT={
             "/notifications/read/{notification_id}"
     };
 
@@ -113,9 +113,9 @@ public class SecurityConfig {
                 request ->
                         request
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(HttpMethod.GET,PUBLIC_ENOPOINTS_GET).permitAll()
-                                .requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS_POST).permitAll()
-                                .requestMatchers(HttpMethod.PUT,PUBLIC_ENOPOINTS_PUT).permitAll()
+                                .requestMatchers(HttpMethod.GET,PUBLIC_ENDPOINTS_GET).permitAll()
+                                .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS_POST).permitAll()
+                                .requestMatchers(HttpMethod.PUT,PUBLIC_ENDPOINTS_PUT).permitAll()
                                 .requestMatchers(HttpMethod.GET,ADMIN_GET).hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST,ADMIN_POST).hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE,ADMIN_DELETE).hasRole("ADMIN")
