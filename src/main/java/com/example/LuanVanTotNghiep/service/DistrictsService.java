@@ -29,6 +29,7 @@ public class DistrictsService {
     DistrictsRepository districtsRepository;
     DistrictsMapper districtsMapper;
     ProvincesRepository provincesRepository;
+    ProvincesService provincesService;
 
     public List<DistrictsResponse> getAllDistricts() {
         List<Districts> districts = districtsRepository.findAll();
@@ -106,8 +107,8 @@ public class DistrictsService {
                     continue; // Bỏ qua dòng trống
                 }
 
-                String provinceId = getCellValueAsString(row.getCell(0));
-                String districtId = getCellValueAsString(row.getCell(2));
+                String provinceId = provincesService.getCellValueAsString(row.getCell(0));
+                String districtId = provincesService.getCellValueAsString(row.getCell(2));
                 String districtName = row.getCell(3).getStringCellValue().trim();
 
                 if (!provincesRepository.existsById(provinceId)) {
@@ -160,22 +161,6 @@ public class DistrictsService {
             return responses;
         } catch (IOException e) {
             throw new AppException(ErrorCode.UNEXPECTED_ERROR);
-        }
-    }
-
-    private String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return "";
-        }
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue().trim();
-            case NUMERIC:
-                return String.valueOf((int) cell.getNumericCellValue()).trim();
-            case BLANK:
-                return "";
-            default:
-                throw new AppException(ErrorCode.INVALID_INPUT);
         }
     }
 

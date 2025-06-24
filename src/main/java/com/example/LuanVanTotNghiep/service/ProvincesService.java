@@ -109,7 +109,7 @@ public class ProvincesService {
         }
     }
 
-    private String getCellValueAsString(Cell cell) {
+    public String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return "";
         }

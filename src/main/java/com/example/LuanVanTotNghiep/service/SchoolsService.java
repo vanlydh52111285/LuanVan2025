@@ -29,6 +29,7 @@ public class SchoolsService {
     SchoolsRepository schoolsRepository;
     SchoolsMapper schoolsMapper;
     ProvincesRepository provincesRepository;
+    ProvincesService provincesService;
 
     public List<SchoolsResponse> getAllSchools() {
         List<Schools> schools = schoolsRepository.findAll();
@@ -75,8 +76,8 @@ public class SchoolsService {
                     continue; // Bỏ qua dòng trống
                 }
 
-                String provinceId = getCellValueAsString(row.getCell(0));
-                String schoolId = getCellValueAsString(row.getCell(2));
+                String provinceId = provincesService.getCellValueAsString(row.getCell(0));
+                String schoolId = provincesService.getCellValueAsString(row.getCell(2));
                 String schoolName = row.getCell(3).getStringCellValue().trim();
 
                 if (!provincesRepository.existsById(provinceId)) {
@@ -141,21 +142,5 @@ public class SchoolsService {
 
         Schools savedSchool = schoolsRepository.save(school);
         return schoolsMapper.toSchoolsResponse(savedSchool);
-    }
-
-    private String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return "";
-        }
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue().trim();
-            case NUMERIC:
-                return String.valueOf((int) cell.getNumericCellValue()).trim();
-            case BLANK:
-                return "";
-            default:
-                throw new AppException(ErrorCode.INVALID_INPUT);
-        }
     }
 }
