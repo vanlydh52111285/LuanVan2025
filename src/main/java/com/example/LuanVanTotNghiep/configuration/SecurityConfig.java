@@ -25,10 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[]  PUBLIC_ENOPOINTS_POST={
-
-            "/student/register","/auth/student/login",
-            "/auth/intro","/auth/admin/login"};
+    //=====================PUBLIC_ENOPOINTS_GET=====================
     private final String[]  PUBLIC_ENOPOINTS_GET={
             "/notifications/mark-read/{notification_id}", "/provinces/all",
             "/provinces/province/{province_id}", "/districts/all",
@@ -43,6 +40,17 @@ public class SecurityConfig {
             "/program", "/api/methods/getMethodById/{method_id}",
             "/api/methods/getAllMethods"
     };
+    private final String[]  PUBLIC_ENOPOINTS_POST={
+            "/student/register","/auth/student/login",
+            "/auth/intro","/auth/admin/login"};
+    private final String[]  PUBLIC_ENOPOINTS_PUT={
+            "/notifications/read/{notification_id}"
+    };
+
+    //=====================ADMIN_ENOPOINTS=====================
+    private final String[] ADMIN_GET={
+            "/student/update-users", "/api/applications/getAllApplications",
+    };
     private final String[] ADMIN_POST={
             "/create-list-pbs","/schedule",
             "/create-branch-program","/admin/create-cadre",
@@ -52,41 +60,49 @@ public class SecurityConfig {
             "/notifications/create", "/api/applications/create",
             "/provinces/import", "/provinces/create",
             "/districts/create", "/districts/import",
-            "shools/import", "schools/create"
-
-    };
-    private final String[] ADMIN_GET={
-            "/student/update-users", "/api/applications/getAllApplications",
-
-
-    };
-    private final String[] ADMIN_PUT={
-            "/groups/{id}"
+            "shools/import", "schools/create",
+            "/subjects/import", "/subjects/create",
     };
     private final String[] ADMIN_DELETE={
             "/groups/{id}","/admin/users/{id}",
             "/delete-branch-group","/notifications/delete/{notification_id}",
-
-};
-    private final String[]  PUBLIC_ENOPOINTS_PUT={
-            "/notifications/read/{notification_id}"
+    };
+    private final String[] ADMIN_PUT={
+            "/groups/{id}"
     };
 
-    private final String[]  PUBLIC_ENOPOINTS_POST={"/student/register","/auth/student/login","/auth/intro","/auth/admin/login"};
-    private final String[]  PUBLIC_ENOPOINTS_PUT={"/notifications/read/{notification_id}"};
-    private final String[]  PUBLIC_ENOPOINTS_GET={"/groups","/university","/api/excel/download","/branch","/program", "/api/methods/getMethodById/{method_id}", "/api/methods/getAllMethods", "/notifications/mark-read/{notification_id}", "/provinces/all","/provinces/province/{province_id}", "/districts/all", "/districts/province/{province_id}", "/schools/all", "/schools/province/{province_id}",};
-    private final String[] ADMIN_POST={"/admin/create-cadre","/groups","/university","/branch","/create-branch-group","/program","/quantity", "/notifications/create", "/api/applications/create", "/provinces/import", "/provinces/create","/districts/create", "/districts/import", "/shools/import", "/schools/create", "/subjects/import", "/subjects/create"};
-    private final String[] ADMIN_GET={"/student/update-users","/quantity", "/api/applications/getAllApplications"};
-    private final String[] ADMIN_PUT={};
-    private final String[] ADMIN_DELETE={"/admin/users/{id}","/delete-branch-group", "/notifications/delete/{notification_id}"};
-    private final String[] CADRE_POST={};
-    private final String[] CADRE_GET={"/api/applications/getAllApplications"};
-    private final String[] CADRE_PUT={};
-    private final String[] CADRE_DELETE={};
-    private final String[] STUDENT_POST={"/api/documents/create", "/api/applications/create"};
-    private final String[] STUDEN_GET={"/api/documents/images", "/api/applications/getApplicationsByUser"};
-    private final String[] STUDENT_PUT={"/student/update-users", "/api/applications/update/{applicationId}", "/api/documents/update/{documentId}"};
-    private final String[] STUDENT_DELETE={"/api/applications/delete/{applicationId}" ,"/api/documents/delete/{documentId}"};
+    //=====================CADRE_ENOPOINTS=====================
+    private final String[] CADRE_GET={
+            "/api/applications/getAllApplications"
+    };
+    private final String[] CADRE_POST={
+
+    };
+    private final String[] CADRE_DELETE={
+
+    };
+    private final String[] CADRE_PUT={
+
+    };
+
+    //=====================STUDENT_ENOPOINTS=====================
+    private final String[] STUDENT_GET={
+            "/api/documents/images",
+            "/api/applications/getApplicationsByUser"
+    };
+    private final String[] STUDENT_POST={
+            "/api/documents/create",
+            "/api/applications/create"
+    };
+    private final String[] STUDENT_DELETE={
+            "/api/applications/delete/{applicationId}",
+            "/api/documents/delete/{documentId}"
+    };
+    private final String[] STUDENT_PUT={
+            "/student/update-users",
+            "/api/applications/update/{applicationId}",
+            "/api/documents/update/{documentId}"
+    };
 
 
 
@@ -98,22 +114,21 @@ public class SecurityConfig {
                 request ->
                         request
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS_POST).permitAll()
                                 .requestMatchers(HttpMethod.GET,PUBLIC_ENOPOINTS_GET).permitAll()
+                                .requestMatchers(HttpMethod.POST,PUBLIC_ENOPOINTS_POST).permitAll()
                                 .requestMatchers(HttpMethod.PUT,PUBLIC_ENOPOINTS_PUT).permitAll()
-                                .requestMatchers(HttpMethod.POST,ADMIN_POST).hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET,ADMIN_GET).hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PUT,ADMIN_PUT).hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST,ADMIN_POST).hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE,ADMIN_DELETE).hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST,CADRE_POST).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.PUT,ADMIN_PUT).hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET,CADRE_GET).hasRole("CADRE")
-                                .requestMatchers(HttpMethod.PUT,CADRE_PUT).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.POST,CADRE_POST).hasRole("CADRE")
                                 .requestMatchers(HttpMethod.DELETE,CADRE_DELETE).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.PUT,CADRE_PUT).hasRole("CADRE")
+                                .requestMatchers(HttpMethod.GET,STUDENT_GET).hasRole("STUDENT")
                                 .requestMatchers(HttpMethod.POST,STUDENT_POST).hasRole("STUDENT")
-                                .requestMatchers(HttpMethod.GET,STUDEN_GET).hasRole("STUDENT")
-                                .requestMatchers(HttpMethod.PUT,STUDENT_PUT).hasRole("STUDENT")
                                 .requestMatchers(HttpMethod.DELETE,STUDENT_DELETE).hasRole("STUDENT")
-
+                                .requestMatchers(HttpMethod.PUT,STUDENT_PUT).hasRole("STUDENT")
                                 .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oath2->
