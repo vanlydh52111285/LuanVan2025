@@ -62,6 +62,8 @@ public enum ErrorCode {
     DATA_ALREADY_EXISTS(2001, "Dữ liệu đã tồn tại", HttpStatus.BAD_REQUEST),
 
     INVALID_TIME_FORMAT(1038,"Thời gian tuyển không hợp lệ",HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_TIME_SCHEDULE(1046,"Đang trong thời gian tuyển sinh, không thể thực hiện thao tác",HttpStatus.INTERNAL_SERVER_ERROR),
+
     // Lỗi liên quan đến cơ sở dữ liệu
     DATABASE_ERROR(1015, "Lỗi cơ sở dữ liệu", HttpStatus.INTERNAL_SERVER_ERROR),
     CONSTRAINT_VIOLATION(1016, "Vi phạm ràng buộc dữ liệu", HttpStatus.BAD_REQUEST);

@@ -45,10 +45,17 @@ public class GroupsService {
     }
     public GroupsResponse updateGroups(String group_id, GroupsRequest request){
         Groups groups = groupsRepository.findById(group_id).orElseThrow(()->new AppException(ErrorCode.CONTENT_NO_EXISTS));
+        if (groupsRepository.existsByGroupId(group_id)){
+            throw new AppException(ErrorCode.CONSTRAINT_VIOLATION);
+        }
         groupsMapper.updateGroups(groups,request);
         return groupsMapper.toGroupsResponse(groupsRepository.save(groups));
     }
     public List<GroupsResponse> getAllGroupsTrue(){
         return groupsMapper.listGroups(groupsRepository.findGroupsByTypeTrue());
     }
+//    public void typegroup(String id, boolean type){
+//        Groups groups = groupsRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.CONTENT_NO_EXISTS));
+//        if ()
+//    }
 }
