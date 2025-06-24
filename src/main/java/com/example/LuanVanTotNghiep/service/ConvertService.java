@@ -33,7 +33,7 @@ public class ConvertService {
             case BOOLEAN -> cell.getBooleanCellValue();
             case NUMERIC -> cell.getNumericCellValue() != 0;
             case STRING -> Boolean.parseBoolean(cell.getStringCellValue().trim());
-            default -> false; // Giá trị mặc định nếu không hợp lệ
+            default -> throw new AppException(ErrorCode.INVALID_INPUT);
         };
     }
 }
