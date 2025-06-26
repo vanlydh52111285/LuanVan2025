@@ -10,7 +10,10 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/subjects")
@@ -19,6 +22,27 @@ import java.util.List;
 public class SubjectsController {
 
     SubjectsService subjectsService;
+
+    @GetMapping("/all")
+    public ApiResponse<List<SubjectResponse>> getAllProvinces() {
+        List<SubjectResponse> result = subjectsService.getAllSubjects();
+        return ApiResponse.<List<SubjectResponse>>builder()
+                .code(1000)
+                .message("Lấy danh sách tỉnh/thành phố thành công")
+                .result(result)
+                .build();
+    }
+
+    @GetMapping("/all/excludedSubIds")
+    public ApiResponse<List<SubjectResponse>> getAllSubjectsExcludedSubIds() {
+        Set<String> excludedIds = new HashSet<>(Arrays.asList("DBT10", "DBT11", "DBT12", "DGNL"));
+        List<SubjectResponse> result = subjectsService.getAllSubjectsExcludedSubIds(excludedIds);
+        return ApiResponse.<List<SubjectResponse>>builder()
+                .code(1000)
+                .message("Lấy danh sách tỉnh/thành phố thành công")
+                .result(result)
+                .build();
+    }
 
     @PostMapping("/create")
     public ApiResponse<SubjectResponse> createProvince(@RequestBody SubjectsRequest request) {

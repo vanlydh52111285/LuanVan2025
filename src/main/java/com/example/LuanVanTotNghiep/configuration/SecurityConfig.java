@@ -37,7 +37,7 @@ public class SecurityConfig {
             "/groups","/university",
             "/api/excel/download","/branch",
             "/program", "/api/methods/getMethodById/{method_id}",
-            "/api/methods/getAllMethods"
+            "/api/methods/getAllMethods", "/subjects/all/excludedSubIds",
     };
     private final String[]  PUBLIC_ENDPOINTS_POST={
             "/student/register","/auth/student/login",
@@ -61,13 +61,17 @@ public class SecurityConfig {
             "/districts/create", "/districts/import",
             "shools/import", "schools/create",
             "/subjects/import", "/subjects/create",
+            "/groups/import"
     };
     private final String[] ADMIN_DELETE={
             "/groups/{id}","/admin/users/{id}",
             "/delete-branch-group","/notifications/delete/{notification_id}",
+            "/provinces/delete/{province_id}", "/districts/delete/{province_id}/{id}",
+            "/districts/delete/list-district/{province_id}"
     };
     private final String[] ADMIN_PUT={
-            "/groups/{id}"
+            "/groups/{id}", "/provinces/update/{province_id}",
+            "/districts/update/{province_id}/{id}"
     };
 
     //=====================CADRE_ENOPOINTS=====================
@@ -87,7 +91,7 @@ public class SecurityConfig {
     //=====================STUDENT_ENOPOINTS=====================
     private final String[] STUDENT_GET={
             "/api/documents/images",
-            "/api/applications/getApplicationsByUser"
+            "/api/applications/getApplicationsByUser", "/subjects/all"
     };
     private final String[] STUDENT_POST={
             "/api/documents/create",

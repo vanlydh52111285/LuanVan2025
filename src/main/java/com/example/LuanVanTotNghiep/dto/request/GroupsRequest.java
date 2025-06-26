@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GroupsRequest {
+    String id;
     String group_id;
     String groupname;
     String sub1;

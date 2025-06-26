@@ -33,6 +33,21 @@ public class SubjectsService {
     SubjectsMapper subjectsMapper;
     ConvertService convertService;
 
+    public List<SubjectResponse> getAllSubjects() {
+        List<Subjects> subjectsList = subjectsRepository.findAll();
+        return subjectsMapper.listSubjects(subjectsList);
+    }
+
+    public List<SubjectResponse> getAllSubjectsExcludedSubIds(Set<String> excludedSubIds) {
+        List<Subjects> subjectsList = subjectsRepository.findAll();
+        if (excludedSubIds != null && !excludedSubIds.isEmpty()) {
+            subjectsList = subjectsList.stream()
+                    .filter(subject -> !excludedSubIds.contains(subject.getSub_id()))
+                    .collect(Collectors.toList());
+        }
+        return subjectsMapper.listSubjects(subjectsList);
+    }
+
     @Transactional
     public SubjectResponse createSubject(SubjectsRequest request) {
         if (request.getSub_id() == null || request.getSub_id().trim().isEmpty()) {
@@ -75,18 +90,21 @@ public class SubjectsService {
                     continue; // Bỏ qua dòng trống
                 }
 
+                String stt = convertService.convertToString(row.getCell(0));
                 String sub_id = row.getCell(2).getStringCellValue().trim();
                 String sub_name = row.getCell(1).getStringCellValue().trim();
                 boolean sub_sgk_2006 = convertService.convertToBoolean(row.getCell(3));
                 boolean sub_sgk_2018 = convertService.convertToBoolean(row.getCell(4));
 
-                if (existingSubjectsIds.contains(sub_id)) {
+                String subId = stt + "_" +sub_id;
+
+                if (existingSubjectsIds.contains(subId)) {
                     duplicateIds.add(sub_name);
                     continue; // Bỏ qua mã vùng đã tồn tại
                 }
 
                 SubjectsRequest request = SubjectsRequest.builder()
-                        .sub_id(sub_id)
+                        .sub_id(subId)
                         .sub_name(sub_name)
                         .sub_sgk_2006(sub_sgk_2006)
                         .sub_sgk_2018(sub_sgk_2018)

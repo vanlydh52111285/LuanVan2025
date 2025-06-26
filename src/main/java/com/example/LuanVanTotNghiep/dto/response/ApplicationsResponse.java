@@ -16,11 +16,6 @@ public class ApplicationsResponse {
     String application_id;
     ApplicationTypeEnum application_type;
     ApplicationEnum status;
-    Integer priority;
-    Float total_score;
     Date create_date;
-    Date update_date;
-    String notes;
     String userId;
-    String methodId;
 }

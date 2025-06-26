@@ -13,8 +13,4 @@ import lombok.experimental.FieldDefaults;
 public class ApplicationsRequest {
     ApplicationTypeEnum application_type;
     ApplicationEnum status;
-    Integer priority;
-    Float total_score;
-    String notes;
-    String methodId;
 }

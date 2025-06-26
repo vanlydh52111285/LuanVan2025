@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,6 +17,14 @@ import java.util.List;
 public class GroupsController {
     @Autowired
     private GroupsService groupsService;
+
+    @PostMapping("/groups/import")
+    ApiResponse<List<GroupsResponse>> importGroupsFromExcel(@RequestParam("file") MultipartFile file){
+        ApiResponse<List<GroupsResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(groupsService.importGroupsFromExcel(file));
+        return apiResponse;
+    }
+
     @PostMapping("/groups")
     ApiResponse<GroupsResponse> createGroups(@RequestBody @Valid GroupsRequest request){
         ApiResponse<GroupsResponse> apiResponse = new ApiResponse<>();

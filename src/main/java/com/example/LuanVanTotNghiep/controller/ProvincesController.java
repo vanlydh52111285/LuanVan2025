@@ -60,4 +60,24 @@ public class ProvincesController {
                 .result(result)
                 .build();
     }
+
+    @DeleteMapping("/delete/{province_id}")
+    public ApiResponse<String> deleteProvince(@PathVariable String province_id){
+        provincesService.deleteProvince(province_id);
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .message("Xóa tỉnh/thành thành công")
+                .result("Xóa thành công tỉnh/thành có mã " +province_id)
+                .build();
+    }
+
+    @PutMapping("/update")
+    public ApiResponse<ProvincesResponse> updateProvince(@PathVariable String province_id, @RequestBody ProvincesRequest request){
+        ProvincesResponse result = provincesService.updateProvince(province_id, request);
+        return ApiResponse.<ProvincesResponse>builder()
+                .code(1000)
+                .message("Cập nhật tỉnh/thành thành công")
+                .result(result)
+                .build();
+    }
 }

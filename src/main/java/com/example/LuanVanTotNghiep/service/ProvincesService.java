@@ -113,5 +113,40 @@ public class ProvincesService {
         }
     }
 
+    @Transactional
+    public void deleteProvince(String provinceId) {
+        if (!provincesRepository.existsById(provinceId)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + provinceId);
+        }
 
+        long districtCount = provincesRepository.countDistrictsByProvinceId(provinceId);
+        long schoolCount = provincesRepository.countSchoolsByProvinceId(provinceId);
+        if (districtCount > 0) {
+            throw new AppException(ErrorCode.CONSTRAINT_VIOLATION, "Không thể xóa tỉnh/thành vì còn quận/huyện");
+        }
+        if (schoolCount > 0) {
+            throw new AppException(ErrorCode.CONSTRAINT_VIOLATION, "Không thể xóa tỉnh/thành vì còn trường học");
+        }
+        provincesRepository.deleteById(provinceId);
+    }
+
+    @Transactional
+    public ProvincesResponse updateProvince(String provinceId, ProvincesRequest request) {
+        if (!provincesRepository.existsById(provinceId)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + provinceId);
+        }
+        Provinces province = provincesRepository.findById(provinceId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+
+        // Kiểm tra nếu province_id mới đã tồn tại (nếu cho phép thay đổi province_id)
+        if (!provinceId.equals(request.getProvince_id()) && provincesRepository.existsById(request.getProvince_id())) {
+            throw new AppException(ErrorCode.DATA_ALREADY_EXISTS);
+        }
+
+        // Cập nhật thông tin
+        provincesMapper.updateProvince(province, request);
+        Provinces updatedProvince = provincesRepository.save(province);
+
+        return provincesMapper.toProvinceResponse(updatedProvince);
+    }
 }

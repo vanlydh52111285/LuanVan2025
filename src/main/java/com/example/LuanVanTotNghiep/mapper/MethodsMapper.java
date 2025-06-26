@@ -16,7 +16,6 @@ public interface MethodsMapper {
 
     // Cho cập nhật
     @Mapping(target = "method_id", ignore = true) // Bỏ qua method_id
-    @Mapping(target = "applicationList", ignore = true) // Bỏ qua nếu không cần
     void updateMethod(@MappingTarget Methods methods, MethodsRequest request );
     List<MethodResponse> listMethod(List<Methods> methodsList);
 }

@@ -4,7 +4,6 @@ import com.example.LuanVanTotNghiep.dto.request.ApplicationsRequest;
 import com.example.LuanVanTotNghiep.dto.response.ApplicationsResponse;
 import com.example.LuanVanTotNghiep.entity.Applications;
 import com.example.LuanVanTotNghiep.entity.Documents;
-import com.example.LuanVanTotNghiep.entity.Methods;
 import com.example.LuanVanTotNghiep.entity.Users;
 import com.example.LuanVanTotNghiep.enums.ApplicationTypeEnum;
 import com.example.LuanVanTotNghiep.exception.AppException;
@@ -37,21 +36,19 @@ public class ApplicationsService {
     MethodsRepository methodsRepository;
 
 
-    public String generateApplicationId(ApplicationTypeEnum type, String methodId) {
+    public String generateApplicationId(ApplicationTypeEnum type) {
         String prefix = type == ApplicationTypeEnum.UNDERGRADUATE ? "DH" : "SDH";
         String year = String.valueOf(Year.now().getValue());
         int maxSequence = type == ApplicationTypeEnum.UNDERGRADUATE ? 3000 : 1000;
 
-        String searchPattern = type == ApplicationTypeEnum.UNDERGRADUATE ? prefix + year + methodId + "%" : prefix + year + "%";
+        String searchPattern = prefix + year + "%";
         int sequence = applicationsRepository.countByApplicationIdLike(searchPattern).intValue() + 1;
 
         if (sequence > maxSequence) {
             throw new AppException(ErrorCode.DATA_CONFLICT);
         }
 
-        return type == ApplicationTypeEnum.UNDERGRADUATE
-                ? String.format("%s%s%s%04d", prefix, year, methodId, sequence)
-                : String.format("%s%s%04d", prefix, year, sequence);
+        return String.format("%s%s%s%04d", prefix, year, sequence);
     }
 
     @Transactional
@@ -64,31 +61,14 @@ public class ApplicationsService {
         Applications application = applicationsMapper.toCreateApplications(request);
         application.setUser(new Users(userId));
 
-        String methodId;
-        if (request.getApplication_type() == ApplicationTypeEnum.UNDERGRADUATE) {
-            methodId = request.getMethodId();
-            if (methodId == null || methodId.isEmpty()) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
-            }
-            if (!methodId.matches("^[1-3]$")) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
-            }
-        } else {
-            methodId = "POSTGRAD";
-        }
 
-        Methods method = methodsRepository.findByMethod_id(methodId)
-                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
-        application.setAdmission_method(method);
-
-        application.setApplication_id(generateApplicationId(request.getApplication_type(), methodId));
+        application.setApplication_id(generateApplicationId(request.getApplication_type()));
         application.setCreate_date(new Date());
         Applications saved = applicationsRepository.saveAndFlush(application);
         documentsService.updateDocumentsForApplication(saved);
 
         ApplicationsResponse response = applicationsMapper.toApplicationsResponse(saved);
         response.setUserId(saved.getUser() != null ? saved.getUser().getUser_id() : null);
-        response.setMethodId(saved.getAdmission_method() != null ? saved.getAdmission_method().getMethod_id() : null);
         return response;
     }
 
@@ -101,7 +81,6 @@ public class ApplicationsService {
                 .map(application -> {
                     ApplicationsResponse response = applicationsMapper.toApplicationsResponse(application);
                     response.setUserId(application.getUser() != null ? application.getUser().getUser_id() : null);
-                    response.setMethodId(application.getAdmission_method() != null ? application.getAdmission_method().getMethod_id() : null);
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -116,7 +95,6 @@ public class ApplicationsService {
                 .map(application -> {
                     ApplicationsResponse response = applicationsMapper.toApplicationsResponse(application);
                     response.setUserId(application.getUser() != null ? application.getUser().getUser_id() : null);
-                    response.setMethodId(application.getAdmission_method() != null ? application.getAdmission_method().getMethod_id() : null);
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -133,29 +111,12 @@ public class ApplicationsService {
         }
 
         applicationsMapper.updateApplications(application, request);
-        String methodId;
-        if (request.getApplication_type() == ApplicationTypeEnum.UNDERGRADUATE) {
-            methodId = request.getMethodId();
-            if (methodId == null || methodId.isEmpty()) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
-            }
-            if (!methodId.matches("^[1-3]$")) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
-            }
-        } else {
-            methodId = "POSTGRAD";
-        }
 
-        Methods method = methodsRepository.findByMethod_id(methodId)
-                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
-        application.setAdmission_method(method);
-
-        application.setUpdate_date(new Date());
         Applications saved = applicationsRepository.saveAndFlush(application);
 
         ApplicationsResponse response = applicationsMapper.toApplicationsResponse(saved);
         response.setUserId(saved.getUser() != null ? saved.getUser().getUser_id() : null);
-        response.setMethodId(saved.getAdmission_method() != null ? saved.getAdmission_method().getMethod_id() : null);
+
 
         return response;
     }

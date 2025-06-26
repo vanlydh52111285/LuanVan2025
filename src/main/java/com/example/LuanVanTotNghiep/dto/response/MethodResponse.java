@@ -13,5 +13,4 @@ public class MethodResponse {
     String method_id;
     String method_name;
     MethodEnum status;
-    String application_id;
 }

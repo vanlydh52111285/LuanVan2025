@@ -23,9 +23,6 @@ public class Methods {
     @Enumerated(EnumType.STRING)
     MethodEnum status;
 
-    @OneToMany(mappedBy = "admission_method", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Applications> applicationList;
-
     @ManyToOne
     @JoinColumn(name = "university_id")
     Universities university;

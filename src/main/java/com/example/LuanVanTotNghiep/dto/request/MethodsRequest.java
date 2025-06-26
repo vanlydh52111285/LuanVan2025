@@ -19,5 +19,4 @@ public class MethodsRequest {
     @NotBlank(message = "Tên phương thức không được để trống")
     String method_name;
     MethodEnum status;
-    String application_id;
 }

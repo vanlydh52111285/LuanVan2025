@@ -13,6 +13,6 @@ public interface GroupsRepository extends JpaRepository<Groups,String> {
     boolean existsByGroupname(String groupname);
     @Query("SELECT g FROM Groups g WHERE g.type = true")
     List<Groups> findGroupsByTypeTrue();
-    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Branchs b JOIN b.groups g WHERE g.group_id = :groupId")
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Branchs b JOIN b.groups g WHERE g.id = :groupId")
     boolean existsByGroupId(@Param("groupId") String groupId);
 }

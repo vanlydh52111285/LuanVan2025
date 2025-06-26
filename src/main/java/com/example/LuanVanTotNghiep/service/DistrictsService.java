@@ -34,6 +34,11 @@ public class DistrictsService {
 
     public List<DistrictsResponse> getAllDistricts() {
         List<Districts> districts = districtsRepository.findAll();
+
+        if (districts.isEmpty()){
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Danh sách quận/huyện trống");
+        }
+
         return districts.stream().map(district -> {
             DistrictsResponse response = districtsMapper.toDistrictsResponse(district);
             response.setProvince_id(district.getProvince() != null ? district.getProvince().getProvince_id() : "");
@@ -41,7 +46,7 @@ public class DistrictsService {
         }).collect(Collectors.toList());
     }
 
-    public List<DistrictsResponse> getDistrictsByProvinceId(String provinceId) {
+    public List<DistrictsResponse> getListDistrictsByProvinceId(String provinceId) {
         if (provinceId == null || provinceId.trim().isEmpty()) {
             throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
         }
@@ -50,6 +55,11 @@ public class DistrictsService {
         }
 
         List<Districts> districts = districtsRepository.findByProvince_ProvinceId(provinceId);
+
+        if (districts.isEmpty()){
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Danh sách quận/huyện trống");
+        }
+
         return districts.stream().map(district -> {
             DistrictsResponse response = districtsMapper.toDistrictsResponse(district);
             response.setProvince_id(district.getProvince() != null ? district.getProvince().getProvince_id() : "");
@@ -59,23 +69,19 @@ public class DistrictsService {
 
     @Transactional
     public DistrictsResponse createDistrict(DistrictsRequest request) {
-        if (request.getDistrict_id() == null || request.getDistrict_id().trim().isEmpty()) {
-            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
-        }
-        if (request.getDistrict_name() == null || request.getDistrict_name().trim().isEmpty()) {
-            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
-        }
         if (!provincesRepository.existsById(request.getProvince_id())) {
             throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã vùng: " + request.getProvince_id());
         }
-        if (districtsRepository.existsById(request.getDistrict_id())) {
-            throw new AppException(ErrorCode.DATA_ALREADY_EXISTS);
+
+        String id = request.getProvince_id() + "_" + request.getDistrict_id();
+        if (districtsRepository.existsById(id)) {
+            throw new AppException(ErrorCode.DATA_ALREADY_EXISTS, "Quận/huyện đã tồn tại");
         }
 
         Provinces province = provincesRepository.findById(request.getProvince_id())
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
         Districts district = districtsMapper.toCreateDistricts(request);
-        district.setDistrict_id(request.getProvince_id()+ "_" + request.getDistrict_id());
+        district.setId(id);
         district.setProvince(province);
 
         Districts savedDistrict = districtsRepository.save(district);
@@ -92,7 +98,7 @@ public class DistrictsService {
         }
 
         List<Districts> districtsList = new ArrayList<>();
-        Set<String> existingDistrictIds = new HashSet<>(districtsRepository.findAll().stream().map(Districts::getDistrict_id).toList());
+        Set<String> existingIds = new HashSet<>(districtsRepository.findAll().stream().map(Districts::getId).toList());
         Set<String> duplicateIds = new HashSet<>();
 
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
@@ -114,31 +120,16 @@ public class DistrictsService {
                 String districtId = convertService.convertToString(row.getCell(2));
                 String districtName = row.getCell(3).getStringCellValue().trim();
 
-                if (!provincesRepository.existsById(provinceId)) {
-                    continue;
-                }
+                String id = provinceId + "_" + districtId;
 
-                String formatDistrictId = provinceId + "_" + districtId;
-                int index = 1;
-                while (existingDistrictIds.contains(formatDistrictId)) {
-                    // Kiểm tra nếu districtName khác với district đã tồn tại
-                    Optional<Districts> existingDistrict = districtsRepository.findById(formatDistrictId);
-                    if (existingDistrict.isPresent() && !existingDistrict.get().getDistrict_name().equals(districtName)) {
-                        formatDistrictId = provinceId + "_" + districtId + "_" + index;
-                        index++;
-                    } else {
-                        duplicateIds.add(districtName);
-                        duplicateIds.add(formatDistrictId);
-                        break;
-                    }
-                }
-
-                if (duplicateIds.contains(districtName)) {
+                if (existingIds.contains(id)) {
+                    duplicateIds.add(districtName);
                     continue;
                 }
 
                 DistrictsRequest request = DistrictsRequest.builder()
-                        .district_id(formatDistrictId)
+                        .id(id)
+                        .district_id(districtId)
                         .district_name(districtName)
                         .province_id(provinceId)
                         .build();
@@ -148,7 +139,6 @@ public class DistrictsService {
                         .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã vùng: " + provinceId));
                 district.setProvince(province);
                 districtsList.add(district);
-                existingDistrictIds.add(formatDistrictId);
             }
 
             if (!duplicateIds.isEmpty()) {
@@ -165,6 +155,68 @@ public class DistrictsService {
         } catch (IOException e) {
             throw new AppException(ErrorCode.UNEXPECTED_ERROR);
         }
+    }
+
+    @Transactional
+    public void deleteProvince(String province_id, String id) {
+        if (!provincesRepository.existsById(province_id)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + province_id);
+        }
+
+        Districts district = districtsRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy quận/huyện: " + id));
+
+        // Kiểm tra xem district_id có thuộc province_id không
+        if (!district.getProvince().getProvince_id().equals(province_id)) {
+            throw new AppException(ErrorCode.CONSTRAINT_VIOLATION,
+                    "Mã quận/huyện " + id + " không thuộc tỉnh/thành " + province_id);
+        }
+
+        districtsRepository.deleteById(id);
+    }
+
+    @Transactional
+    public  void deleteListProvinces(String province_id){
+        if (!provincesRepository.existsById(province_id)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + province_id);
+        }
+
+        List<Districts> districtsListToDelete = districtsRepository.findByProvince_ProvinceId(province_id);
+        if (districtsListToDelete.isEmpty()){
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không có quận/huyện nào trong tỉnh/thành");
+        }
+
+        districtsRepository.deleteAll(districtsListToDelete);
+
+    }
+
+    @Transactional
+    public DistrictsResponse updateDistricts(String province_id, String id, DistrictsRequest request) {
+        if (!provincesRepository.existsById(province_id)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + province_id);
+        }
+
+        Districts district = districtsRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã quận/huyện: " + id));
+
+        // Kiểm tra xem district_id có thuộc province_id không
+        if (!district.getProvince().getProvince_id().equals(province_id)) {
+            throw new AppException(ErrorCode.CONSTRAINT_VIOLATION,
+                    "Mã quận/huyện " + id + " không thuộc tỉnh/thành " + province_id);
+        }
+
+        // Cập nhật thông tin
+        districtsMapper.updateDistrict(district, request);
+        Provinces province = provincesRepository.findById(province_id)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+        district.setProvince(province);
+
+        Districts updatedDistrict = districtsRepository.save(district);
+        updatedDistrict.setId(id);
+        DistrictsResponse response = districtsMapper.toDistrictsResponse(updatedDistrict);
+        response.setProvince_id(province.getProvince_id() != null ? province.getProvince_id() : null);
+
+        return response;
     }
 
 //    private String normalizeDistrictId(String districtName) {
