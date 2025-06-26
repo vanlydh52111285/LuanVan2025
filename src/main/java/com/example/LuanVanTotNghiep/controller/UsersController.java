@@ -1,6 +1,7 @@
 package com.example.LuanVanTotNghiep.controller;
 
 import com.example.LuanVanTotNghiep.dto.request.UsersRequest;
+import com.example.LuanVanTotNghiep.dto.request.VerifyRequest;
 import com.example.LuanVanTotNghiep.dto.response.ApiResponse;
 import com.example.LuanVanTotNghiep.dto.response.UsersResponse;
 import com.example.LuanVanTotNghiep.service.AuthenticationService;
@@ -29,6 +30,12 @@ public class UsersController {
         apiResponse.setResult(usersService.createStudent(request));
         return apiResponse;
     }
+    @PostMapping("/student/otp")
+    ApiResponse<Boolean> verify(@RequestBody @Valid VerifyRequest request) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(usersService.Verify(request));
+        return apiResponse;
+    }
     @PostMapping("/admin/create-cadre")
     ApiResponse<UsersResponse> createCadre (@RequestBody @Valid UsersRequest request){
         ApiResponse<UsersResponse> apiResponse = new ApiResponse<>();
@@ -42,7 +49,7 @@ public class UsersController {
         apiResponse.setResult("success");
         return apiResponse;
     }
-    @PutMapping("/student/update-users")
+    @PutMapping("/student/update-users/{id}")
     ApiResponse<UsersResponse> updateUsers(@PathVariable String id , @RequestBody UsersRequest request){
         ApiResponse<UsersResponse> apiResponse =  new ApiResponse<>();
         apiResponse.setResult(usersService.updateUsers(id,request));

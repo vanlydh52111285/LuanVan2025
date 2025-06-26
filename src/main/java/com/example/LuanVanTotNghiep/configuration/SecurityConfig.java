@@ -26,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[]  PUBLIC_ENOPOINTS_POST={
-
+            "/student/otp",
             "/student/register","/auth/student/login",
             "/auth/intro","/auth/admin/login"};
     private final String[]  PUBLIC_ENOPOINTS_GET={
@@ -78,7 +78,7 @@ public class SecurityConfig {
     private final String[] CADRE_DELETE={};
     private final String[] STUDENT_POST={"/api/documents/create", "/api/applications/create"};
     private final String[] STUDEN_GET={"/api/documents/images", "/api/applications/getApplicationsByUser"};
-    private final String[] STUDENT_PUT={"/student/update-users", "/api/applications/update/{applicationId}", "/api/documents/update/{documentId}"};
+    private final String[] STUDENT_PUT={"/student/update-users/{id}", "/api/applications/update/{applicationId}", "/api/documents/update/{documentId}"};
     private final String[] STUDENT_DELETE={"/api/applications/delete/{applicationId}" ,"/api/documents/delete/{documentId}"};
 
 

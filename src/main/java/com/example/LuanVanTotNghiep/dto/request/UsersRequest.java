@@ -22,5 +22,8 @@ public class UsersRequest {
     String email;
     @Size (min = 6, message = "INVALID_PASSWORD")
     String password;
-
+    boolean sex;
+    String adress;
+    String province_id;
+    String district_id;
 }

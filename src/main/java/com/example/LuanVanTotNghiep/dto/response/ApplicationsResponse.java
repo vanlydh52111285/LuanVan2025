@@ -22,5 +22,5 @@ public class ApplicationsResponse {
     Date update_date;
     String notes;
     String userId;
-    String methodId;
+   String methodId;
 }

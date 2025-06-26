@@ -105,7 +105,7 @@ public class NotificationsService {
                 helper.setText(notification.getContent(), true); // true để hỗ trợ HTML
 
                 // Thêm link để đánh dấu đã đọc
-                String readLink = "http://localhost:8081/notifications/read/" + notification.getNotification_id();
+                String readLink = "http://localhost:8082/notifications/read/" + notification.getNotification_id();
                 String htmlContent = notification.getContent() + "<br><a href='" + readLink + "'>Đánh dấu đã đọc để tránh việc gửi lại thông báo</a>";
                 helper.setText(htmlContent, true);
 
