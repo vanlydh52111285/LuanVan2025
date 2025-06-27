@@ -35,8 +35,8 @@ public interface BranchsRepository extends JpaRepository<Branchs, String> {
     @Query("SELECT DISTINCT b FROM Branchs b " +
             "JOIN FETCH b.groups g " +
             "JOIN FETCH b.programs p " +
-            "WHERE b.type = true " +
-            "AND g.type = true " +
+            "WHERE b.status = true " +
+            "AND g.status = true " +
             "AND p.type = true "
             )
     List<Branchs> findBranchesWithAtLeastOneGroupAndProgram();

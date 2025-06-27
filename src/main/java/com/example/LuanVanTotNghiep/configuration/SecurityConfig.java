@@ -61,17 +61,20 @@ public class SecurityConfig {
             "/districts/create", "/districts/import",
             "shools/import", "schools/create",
             "/subjects/import", "/subjects/create",
-            "/groups/import"
+            "/groups/import", "/branch/import",
     };
     private final String[] ADMIN_DELETE={
             "/groups/{id}","/admin/users/{id}",
             "/delete-branch-group","/notifications/delete/{notification_id}",
-            "/provinces/delete/{province_id}", "/districts/delete/{province_id}/{id}",
-            "/districts/delete/list-district/{province_id}"
+            "/provinces/delete/{province_id}", "/districts/delete/{province_id}/{district_id}",
+            "/districts/delete/list-district/{province_id}","/schools/delete/{province_id}/{school_id}",
+            "/schools/delete/list-schools/{province_id}", "subjects/delete/{sub_id}",
+            "/branch/delete/{id}"
     };
     private final String[] ADMIN_PUT={
             "/groups/{id}", "/provinces/update/{province_id}",
-            "/districts/update/{province_id}/{id}"
+            "/districts/update/{province_id}/{district_id}", "/schools/update/{province_id}/{school_id}",
+            "/subject/update/{sub_id}", "/branch/delete/{id}"
     };
 
     //=====================CADRE_ENOPOINTS=====================

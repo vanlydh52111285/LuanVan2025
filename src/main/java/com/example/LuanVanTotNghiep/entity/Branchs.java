@@ -20,7 +20,7 @@ public class Branchs {
     String branch_id;
     @Column(name = "branch_name")
     String branchname;
-    boolean type;
+    boolean status;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "branchs_groups",

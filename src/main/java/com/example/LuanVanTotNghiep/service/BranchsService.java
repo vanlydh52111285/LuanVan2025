@@ -22,14 +22,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +48,8 @@ public class BranchsService {
     GroupsMapper groupsMapper;
     ProgramsRepository programsRepository;
     ProgramsMapper programsMapper;
+    ConvertService convertService;
+
     @Transactional
     public BranchsResponse createBranch(BranchsRequest request) {
          // Kiểm tra branch_id đã tồn tại
@@ -119,6 +124,100 @@ public class BranchsService {
 
         // 7. Chuyển đổi và trả về BranchsResponse
         return branchsMapper.toBranchsGroupsResponse(updatedBranch);
+    }
+
+    @Transactional
+    public List<BranchsResponse> importBranchsFromExcel(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
+        }
+
+        List<Branchs> branchsList = new ArrayList<>();
+        Set<String> existingBranchIds = new HashSet<>(branchsRepository.findAll().stream().map(Branchs::getBranch_id).toList());
+        Set<String> duplicateNames = new HashSet<>();
+
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0); // Lấy sheet đầu tiên (Sheet1)
+            Iterator<Row> rowIterator = sheet.iterator();
+
+            // Bỏ qua header
+            if (rowIterator.hasNext()) {
+                rowIterator.next();
+            }
+
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                if (row.getCell(0) == null || row.getCell(1) == null || row.getCell(2) == null) {
+                    continue; // Bỏ qua dòng trống
+                }
+
+                String university_id = row.getCell(1).getStringCellValue().trim();
+                String branchId = convertService.convertToString(row.getCell(2)).trim();
+                String branchName = row.getCell(3).getStringCellValue().trim();
+                boolean status = convertService.convertToBoolean(row.getCell(4));
+
+                if (existingBranchIds.contains(branchId)) {
+                    duplicateNames.add(branchName);
+                    continue; // Bỏ qua mã ngành đã tồn tại
+                }
+
+                BranchsRequest request = BranchsRequest.builder()
+                        .branch_id(branchId)
+                        .branchname(branchName)
+                        .status(status)
+                        .university_id(university_id) // Giả định university_id mặc định, cần điều chỉnh nếu có logic cụ thể
+                        .build();
+
+                Branchs branch = branchsMapper.toCreateBranch(request);
+                Universities university = universitiesRepository.findById(university_id)
+                                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy trường đại học có mã: " + university_id));
+                branch.setUniversity(university);
+                branchsList.add(branch);
+            }
+
+            if (!duplicateNames.isEmpty()) {
+                throw new AppException(ErrorCode.DATA_ALREADY_EXISTS, "Ngành học đã tồn tại: " + String.join(", ", duplicateNames));
+            }
+
+            List<Branchs> savedBranchs = new ArrayList<>(branchsRepository.saveAll(branchsList));
+            return savedBranchs.stream().map(branchsMapper::toBranchResponse).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.UNEXPECTED_ERROR);
+        }
+    }
+
+    @Transactional
+    public void deleteBranch(String branchId) {
+        if (!branchsRepository.existsById(branchId)) {
+            throw new AppException(ErrorCode.BRANCHID_NOT_FOUND, "Không tìm thấy ngành học với mã: " + branchId);
+        }
+
+        branchsRepository.deleteById(branchId);
+    }
+
+    @Transactional
+    public BranchsResponse updateBranch(String branchId, BranchsRequest request) {
+        if (branchId == null || branchId.trim().isEmpty()) {
+            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
+        }
+        if (!branchsRepository.existsById(branchId)) {
+            throw new AppException(ErrorCode.BRANCHID_NOT_FOUND, "Không tìm thấy ngành học với mã: " + branchId);
+        }
+
+        Branchs branch = branchsRepository.findById(branchId)
+                .orElseThrow(() -> new AppException(ErrorCode.BRANCHID_NOT_FOUND));
+
+        // Cập nhật thông tin
+        branchsMapper.updateBranch(branch, request);
+        Universities university = universitiesRepository.findById(request.getUniversity_id())
+                .orElseThrow(() -> new AppException(ErrorCode.UNIVERSITYID_NOT_FOUND));
+        branch.setUniversity(university);
+
+        Branchs updatedBranch = branchsRepository.save(branch);
+        BranchsResponse response = branchsMapper.toBranchResponse(updatedBranch);
+        response.setUniversityResponse(universitiesMapper.toUniversityResponse(university));
+
+        return response;
     }
 //    @Transactional
 //    public void deleteBranch_Groups(Branchs_GroupsRequest request) {

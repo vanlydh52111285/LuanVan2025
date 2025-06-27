@@ -4,12 +4,14 @@ import com.cloudinary.Api;
 import com.example.LuanVanTotNghiep.dto.request.BranchsRequest;
 import com.example.LuanVanTotNghiep.dto.request.Branchs_GroupsRequest;
 import com.example.LuanVanTotNghiep.dto.request.Branchs_ProgramsRequest;
+import com.example.LuanVanTotNghiep.dto.request.GroupsRequest;
 import com.example.LuanVanTotNghiep.dto.response.*;
 import com.example.LuanVanTotNghiep.service.BranchsService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,18 +20,41 @@ import java.util.List;
 public class BranchsController {
     @Autowired
     private BranchsService branchsService;
-    @PostMapping("/branch")
-    ApiResponse<BranchsResponse> createBarchs(@RequestBody @Valid BranchsRequest request){
-        ApiResponse<BranchsResponse> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(branchsService.createBranch(request));
-        return apiResponse;
-    }
+
     @GetMapping("/branch")
     ApiResponse<List<Branchs_Entity_Response>> getAllBranchs(){
         ApiResponse<List<Branchs_Entity_Response>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(branchsService.getAllBranchs());
         return apiResponse;
     }
+    @PostMapping("/branch")
+    ApiResponse<BranchsResponse> createBarchs(@RequestBody @Valid BranchsRequest request){
+        ApiResponse<BranchsResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(branchsService.createBranch(request));
+        return apiResponse;
+    }
+
+    @PostMapping("/branch/import")
+    ApiResponse<List<BranchsResponse>> importBranchsFromExcel(@RequestParam("file") MultipartFile file){
+        ApiResponse<List<BranchsResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(branchsService.importBranchsFromExcel(file));
+        return apiResponse;
+    }
+
+    @DeleteMapping("/branch/delete/{id}")
+    ApiResponse<String> deleteBranch(@PathVariable String id){
+        branchsService.deleteBranch(id);
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setResult("success");
+        return apiResponse;
+    }
+    @PutMapping("/branch/update/{id}")
+    ApiResponse<BranchsResponse> updateBranch(@PathVariable String id,@RequestBody BranchsRequest request){
+        ApiResponse<BranchsResponse> apiResponse =new ApiResponse<>();
+        apiResponse.setResult(branchsService.updateBranch(id,request));
+        return apiResponse;
+    }
+
     @PostMapping("/create-branch-group")
     ApiResponse<Branchs_GroupsResponse> createBranchs_Groups(@RequestBody @Valid Branchs_GroupsRequest request){
         ApiResponse<Branchs_GroupsResponse> apiResponse = new ApiResponse<>();

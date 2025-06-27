@@ -14,8 +14,6 @@ import lombok.experimental.FieldDefaults;
 public class Districts {
 
     @Id
-    String id;
-
     String district_id;
     String district_name;
 

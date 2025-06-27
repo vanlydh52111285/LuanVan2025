@@ -12,4 +12,7 @@ import java.util.List;
 public interface DistrictsRepository extends JpaRepository<Districts, String> {
     @Query("SELECT d FROM Districts d WHERE d.province.province_id = :province_id")
     List<Districts> findByProvince_ProvinceId(@Param("province_id") String provinceId);
+
+    @Query("SELECT COUNT(d) > 0 FROM Districts d WHERE d.province.province_id = :provinceId")
+    boolean existsByProvince_ProvinceIdAndDistrict_id(String provinceId);
 }

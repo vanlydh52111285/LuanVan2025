@@ -61,4 +61,32 @@ public class SchoolsController {
                 .result(result)
                 .build();
     }
+
+    @DeleteMapping("/delete/{province_id}/{school_id}")
+    public ApiResponse<String> deleteSchool(@PathVariable String province_id, @PathVariable String school_id){
+        schoolsService.deleteSchool(province_id, school_id);
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .message("Xóa trường học thành công")
+                .build();
+    }
+
+    @DeleteMapping("/delete/list-schools/{province_id}")
+    public ApiResponse<String> deleteListSchools(@PathVariable String province_id){
+        schoolsService.deleteListSchools(province_id);
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .message("Xóa trường học thành công")
+                .build();
+    }
+
+    @PutMapping("/update/{province_id}/{school_id}")
+    public ApiResponse<SchoolsResponse> updateSchool(@PathVariable String province_id, @PathVariable String school_id, @RequestBody SchoolsRequest request) {
+        SchoolsResponse result = schoolsService.updateSchool(province_id, school_id, request);
+        return ApiResponse.<SchoolsResponse>builder()
+                .code(1000)
+                .message("Cập nhật trường học thành công")
+                .result(result)
+                .build();
+    }
 }

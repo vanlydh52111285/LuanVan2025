@@ -12,12 +12,12 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface GroupsMapper {
-//    @Mapping(target = "type",source = "type")
+//    @Mapping(target = "status",source = "status")
     Groups toCreateGroups(GroupsRequest request);
-//    @Mapping(target = "type",source = "type")
+//    @Mapping(target = "status",source = "status")
     GroupsResponse toGroupsResponse(Groups groups);
-//    @Mapping(target = "type",source = "type")
+//    @Mapping(target = "status",source = "status")
     void updateGroups(@MappingTarget Groups groups, GroupsRequest request );
-//    @Mapping(target = "type",source = "type")
+//    @Mapping(target = "status",source = "status")
     List<GroupsResponse> listGroups(List<Groups> groupsList);
 }

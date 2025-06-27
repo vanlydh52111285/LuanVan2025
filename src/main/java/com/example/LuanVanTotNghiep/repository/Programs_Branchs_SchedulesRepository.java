@@ -15,7 +15,7 @@ public interface Programs_Branchs_SchedulesRepository extends JpaRepository<Prog
             "JOIN FETCH pbs.branch b " +
             "JOIN FETCH pbs.schedule s " +
             "WHERE pbs.schedule.schedule_id = :scheduleId " +
-            "AND b.type = true " +
+            "AND b.status = true " +
             "AND p.type = true")
     List<Programs_Branchs_Schedules> findByScheduleId(@Param("scheduleId") String scheduleId);
     @Query("SELECT CASE WHEN COUNT(pbs) > 0 THEN true ELSE false END FROM Programs_Branchs_Schedules pbs WHERE pbs.schedule.schedule_id = :scheduleId")

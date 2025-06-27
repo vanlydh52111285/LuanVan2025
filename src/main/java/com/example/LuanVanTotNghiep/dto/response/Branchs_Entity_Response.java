@@ -12,5 +12,5 @@ import java.util.Set;
 public class Branchs_Entity_Response {
     String branch_id;
     String branchname;
-    boolean type;
+    boolean status;
 }

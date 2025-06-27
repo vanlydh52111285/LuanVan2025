@@ -50,12 +50,6 @@ public class SubjectsService {
 
     @Transactional
     public SubjectResponse createSubject(SubjectsRequest request) {
-        if (request.getSub_id() == null || request.getSub_id().trim().isEmpty()) {
-            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
-        }
-        if (request.getSub_name() == null || request.getSub_name().trim().isEmpty()) {
-            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
-        }
         if (subjectsRepository.existsById(request.getSub_id())) {
             throw new AppException(ErrorCode.DATA_ALREADY_EXISTS);
         }
@@ -96,15 +90,13 @@ public class SubjectsService {
                 boolean sub_sgk_2006 = convertService.convertToBoolean(row.getCell(3));
                 boolean sub_sgk_2018 = convertService.convertToBoolean(row.getCell(4));
 
-                String subId = stt + "_" +sub_id;
-
-                if (existingSubjectsIds.contains(subId)) {
+                if (existingSubjectsIds.contains(sub_id)) {
                     duplicateIds.add(sub_name);
                     continue; // Bỏ qua mã vùng đã tồn tại
                 }
 
                 SubjectsRequest request = SubjectsRequest.builder()
-                        .sub_id(subId)
+                        .sub_id(sub_id)
                         .sub_name(sub_name)
                         .sub_sgk_2006(sub_sgk_2006)
                         .sub_sgk_2018(sub_sgk_2018)
@@ -123,5 +115,30 @@ public class SubjectsService {
         } catch (IOException e) {
             throw new AppException(ErrorCode.UNEXPECTED_ERROR);
         }
+    }
+
+    @Transactional
+    public void deleteSubject(String subId) {
+        if (!subjectsRepository.existsById(subId)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy môn học với mã: " + subId);
+        }
+
+        subjectsRepository.deleteById(subId);
+    }
+
+    @Transactional
+    public SubjectResponse updateSubject(String subId, SubjectsRequest request) {
+        if (!subjectsRepository.existsById(subId)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy môn học với mã: " + subId);
+        }
+
+        Subjects subject = subjectsRepository.findById(subId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+
+        // Cập nhật thông tin
+        subjectsMapper.updateSubject(subject, request);
+        Subjects updatedSubject = subjectsRepository.save(subject);
+
+        return subjectsMapper.toSubjectResponse(updatedSubject);
     }
 }

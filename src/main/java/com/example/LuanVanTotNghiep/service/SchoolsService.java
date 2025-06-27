@@ -124,17 +124,11 @@ public class SchoolsService {
 
     @Transactional
     public SchoolsResponse createSchool(SchoolsRequest request) {
-        if (request.getSchool_id() == null || request.getSchool_id().trim().isEmpty()) {
-            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
-        }
-        if (request.getSchool_name() == null || request.getSchool_name().trim().isEmpty()) {
-            throw new AppException(ErrorCode.REQUEST_IS_EMPTY);
-        }
         if (!provincesRepository.existsById(request.getProvince_id())) {
-            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã vùng: " + request.getProvince_id());
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy tỉnh/thành có mã: " + request.getProvince_id());
         }
         if (schoolsRepository.existsById(request.getSchool_id())) {
-            throw new AppException(ErrorCode.DATA_ALREADY_EXISTS);
+            throw new AppException(ErrorCode.DATA_ALREADY_EXISTS, "Trường học đã tồn tại");
         }
 
         Schools school = schoolsMapper.toCreateSchools(request);
@@ -144,6 +138,68 @@ public class SchoolsService {
         school.setProvince(province);
 
         Schools savedSchool = schoolsRepository.save(school);
-        return schoolsMapper.toSchoolsResponse(savedSchool);
+        SchoolsResponse response = schoolsMapper.toSchoolsResponse(savedSchool);
+        response.setProvince_id(province.getProvince_id() != null ? province.getProvince_id() : null);
+
+        return response;
     }
+
+    @Transactional
+    public void deleteSchool(String provinceId, String schoolId) {
+        if (!provincesRepository.existsById(provinceId)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy tỉnh/thành có mã: " + provinceId);
+        }
+
+        Schools school = schoolsRepository.findById(schoolId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy trường có mã: " + schoolId));
+
+        // Kiểm tra xem school_id có thuộc province_id không
+        if (!school.getProvince().getProvince_id().equals(provinceId)) {
+            throw new AppException(ErrorCode.CONSTRAINT_VIOLATION,
+                    "Mã trường " + schoolId + " không thuộc tỉnh/thành " + provinceId);
+        }
+
+        schoolsRepository.deleteById(schoolId);
+    }
+
+    @Transactional
+    public void deleteListSchools(String provinceId) {
+        if (!provincesRepository.existsById(provinceId)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + provinceId);
+        }
+
+        List<Schools> schoolsListToDelete = schoolsRepository.findByProvinces_ProvinceId(provinceId);
+        if (schoolsListToDelete.isEmpty()) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không có trường nào trong tỉnh/thành");
+        }
+
+        schoolsRepository.deleteAll(schoolsListToDelete);
+    }
+
+    @Transactional
+    public SchoolsResponse updateSchool(String provinceId, String schoolId, SchoolsRequest request) {
+        if (!provincesRepository.existsById(provinceId)) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + provinceId);
+        }
+
+        Schools school = schoolsRepository.findById(schoolId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã trường: " + schoolId));
+
+        // Kiểm tra xem school_id có thuộc province_id không
+        if (!school.getProvince().getProvince_id().equals(provinceId)) {
+            throw new AppException(ErrorCode.CONSTRAINT_VIOLATION,
+                    "Mã trường " + schoolId + " không thuộc tỉnh/thành " + provinceId);
+        }
+
+        // Cập nhật thông tin
+        schoolsMapper.updateSchool(school, request);
+        Provinces province = provincesRepository.findById(provinceId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+        school.setProvince(province);
+
+        Schools updatedSchool = schoolsRepository.save(school);
+        SchoolsResponse response = schoolsMapper.toSchoolsResponse(updatedSchool);
+        response.setProvince_id(province.getProvince_id() != null ? province.getProvince_id() : null);
+
+        return response;    }
 }

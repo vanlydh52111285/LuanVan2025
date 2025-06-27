@@ -11,11 +11,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface DistrictsMapper {
-    @Mapping(target = "id", source = "id")
     Districts toCreateDistricts(DistrictsRequest request);
-    @Mapping(target = "id", source = "id")
     DistrictsResponse toDistrictsResponse(Districts districts);
-
     void updateDistrict(@MappingTarget Districts districts, DistrictsRequest request);
     List<DistrictsResponse> listDistricts(List<Districts> districtsList);
 }

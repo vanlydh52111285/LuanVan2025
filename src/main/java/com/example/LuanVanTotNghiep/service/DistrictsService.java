@@ -70,18 +70,17 @@ public class DistrictsService {
     @Transactional
     public DistrictsResponse createDistrict(DistrictsRequest request) {
         if (!provincesRepository.existsById(request.getProvince_id())) {
-            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã vùng: " + request.getProvince_id());
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy tỉnh/thành có mã: " + request.getProvince_id());
         }
 
-        String id = request.getProvince_id() + "_" + request.getDistrict_id();
-        if (districtsRepository.existsById(id)) {
+        if (districtsRepository.existsById(request.getDistrict_id())) {
             throw new AppException(ErrorCode.DATA_ALREADY_EXISTS, "Quận/huyện đã tồn tại");
         }
 
         Provinces province = provincesRepository.findById(request.getProvince_id())
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
         Districts district = districtsMapper.toCreateDistricts(request);
-        district.setId(id);
+        district.setDistrict_id(request.getProvince_id() + "_" + request.getDistrict_id());
         district.setProvince(province);
 
         Districts savedDistrict = districtsRepository.save(district);
@@ -98,7 +97,7 @@ public class DistrictsService {
         }
 
         List<Districts> districtsList = new ArrayList<>();
-        Set<String> existingIds = new HashSet<>(districtsRepository.findAll().stream().map(Districts::getId).toList());
+        Set<String> existingIds = new HashSet<>(districtsRepository.findAll().stream().map(Districts::getDistrict_id).toList());
         Set<String> duplicateIds = new HashSet<>();
 
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
@@ -128,8 +127,7 @@ public class DistrictsService {
                 }
 
                 DistrictsRequest request = DistrictsRequest.builder()
-                        .id(id)
-                        .district_id(districtId)
+                        .district_id(id)
                         .district_name(districtName)
                         .province_id(provinceId)
                         .build();
@@ -139,6 +137,7 @@ public class DistrictsService {
                         .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã vùng: " + provinceId));
                 district.setProvince(province);
                 districtsList.add(district);
+                existingIds.add(districtId);
             }
 
             if (!duplicateIds.isEmpty()) {
@@ -158,25 +157,25 @@ public class DistrictsService {
     }
 
     @Transactional
-    public void deleteProvince(String province_id, String id) {
+    public void deleteDistrict(String province_id, String district_id) {
         if (!provincesRepository.existsById(province_id)) {
             throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + province_id);
         }
 
-        Districts district = districtsRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy quận/huyện: " + id));
+        Districts district = districtsRepository.findById(district_id)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy quận/huyện: " + district_id));
 
         // Kiểm tra xem district_id có thuộc province_id không
         if (!district.getProvince().getProvince_id().equals(province_id)) {
             throw new AppException(ErrorCode.CONSTRAINT_VIOLATION,
-                    "Mã quận/huyện " + id + " không thuộc tỉnh/thành " + province_id);
+                    "Mã quận/huyện " + district_id + " không thuộc tỉnh/thành " + province_id);
         }
 
-        districtsRepository.deleteById(id);
+        districtsRepository.deleteById(district_id);
     }
 
     @Transactional
-    public  void deleteListProvinces(String province_id){
+    public  void deleteListDistricts(String province_id){
         if (!provincesRepository.existsById(province_id)) {
             throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy mã tỉnh/thành: " + province_id);
         }
@@ -212,7 +211,6 @@ public class DistrictsService {
         district.setProvince(province);
 
         Districts updatedDistrict = districtsRepository.save(district);
-        updatedDistrict.setId(id);
         DistrictsResponse response = districtsMapper.toDistrictsResponse(updatedDistrict);
         response.setProvince_id(province.getProvince_id() != null ? province.getProvince_id() : null);
 

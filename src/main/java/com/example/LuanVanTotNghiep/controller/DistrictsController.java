@@ -64,27 +64,25 @@ public class DistrictsController {
     }
 
 
-    @DeleteMapping("/delete/{province_id}/{id}")
-    public ApiResponse<String> deleteDistrict(@PathVariable String province_id, @PathVariable String id){
-        districtsService.deleteProvince(province_id, id);
+    @DeleteMapping("/delete/{province_id}/{district_id}")
+    public ApiResponse<String> deleteDistrict(@PathVariable String province_id, @PathVariable String district_id){
+        districtsService.deleteDistrict(province_id, district_id);
         return ApiResponse.<String>builder()
                 .code(1000)
                 .message("Xóa quận/huyện thành công")
-                .result("Xóa thành công quận/huyện có mã " + id)
                 .build();
     }
 
     @DeleteMapping("/delete/list-district/{province_id}")
     public ApiResponse<String> deleteListDistrict(@PathVariable String province_id){
-        districtsService.deleteListProvinces(province_id);
+        districtsService.deleteListDistricts(province_id);
         return ApiResponse.<String>builder()
                 .code(1000)
-                .message("Xóa danh sách quận/huyện thành công")
                 .result("Xóa danh sách quận/huyện thành công")
                 .build();
     }
 
-    @PutMapping("/update/{province_id}/{id}")
+    @PutMapping("/update/{province_id}/{district_id}")
     public ApiResponse<DistrictsResponse> updateProvince(@PathVariable String province_id, @PathVariable String id, @RequestBody DistrictsRequest request){
         DistrictsResponse result = districtsService.updateDistricts(province_id, id, request);
         return ApiResponse.<DistrictsResponse>builder()

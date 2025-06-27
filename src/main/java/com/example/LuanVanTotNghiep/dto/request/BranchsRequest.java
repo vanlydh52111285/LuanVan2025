@@ -14,5 +14,5 @@ public class BranchsRequest {
     String branch_id;
     String branchname;
     String university_id;
-    boolean type;
+    boolean status;
 }

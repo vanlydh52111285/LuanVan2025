@@ -17,20 +17,20 @@ import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface BranchsMapper {
-    @Mapping(target = "type",source = "type")
+    @Mapping(target = "status",source = "status")
     Branchs toCreateBranch(BranchsRequest request);
-    @Mapping(target = "type",source = "type")
+    @Mapping(target = "status",source = "status")
     BranchsResponse toBranchResponse(Branchs branchs);
-    @Mapping(target = "type",source = "type")
-    void updateBrach(@MappingTarget Branchs branchs, BranchsRequest request );
-    @Mapping(target = "type",source = "type")
+    @Mapping(target = "status",source = "status")
+    void updateBranch(@MappingTarget Branchs branchs, BranchsRequest request );
+    @Mapping(target = "status",source = "status")
     List<BranchsResponse> listBranchs(List<Branchs> List);
-    @Mapping(target = "type",source = "type")
+    @Mapping(target = "status",source = "status")
     List<Branchs_Entity_Response> lBranchsEntityResponses(List<Branchs> list);
-    @Mapping(target = "type",source = "type")
+    @Mapping(target = "status",source = "status")
     Branchs_GroupsResponse toBranchsGroupsResponse(Branchs branchs);
-    @Mapping(target = "type",source = "type")
+    @Mapping(target = "status",source = "status")
     Branchs_ProgramsResponse toBranchsProgramsResponse(Branchs updatedBranch);
-    @Mapping(target = "type",source = "type")
+    @Mapping(target = "status",source = "status")
     List<Branchs_ProgramsResponse> lBranchsProgramsResponses(List<Branchs> branchsList);
 }

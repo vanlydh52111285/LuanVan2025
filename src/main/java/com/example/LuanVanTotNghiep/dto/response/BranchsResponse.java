@@ -15,7 +15,7 @@ import java.util.Set;
 public class BranchsResponse {
     String branch_id;
     String branchname;
-    boolean type;
+    boolean status;
     UniversitiesResponse universityResponse;
 
 }

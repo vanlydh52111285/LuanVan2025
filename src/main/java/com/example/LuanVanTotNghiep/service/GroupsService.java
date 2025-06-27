@@ -42,7 +42,7 @@ public class GroupsService {
         }
 
         List<Groups> groupsList = new ArrayList<>();
-        Set<String> existingIds = new HashSet<>(groupsRepository.findAll().stream().map(Groups::getId).toList());
+        Set<String> existingIds = new HashSet<>(groupsRepository.findAll().stream().map(Groups::getGroup_id).toList());
         Set<String> duplicateIds = new HashSet<>();
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0); // Lấy sheet đầu tiên (Sheet1)
@@ -64,24 +64,21 @@ public class GroupsService {
                 String sub1 = row.getCell(3).getStringCellValue().trim();
                 String sub2 =row.getCell(4).getStringCellValue().trim();
                 String sub3 = row.getCell(5).getStringCellValue().trim();
-                boolean type = convertService.convertToBoolean(row.getCell(6));
+                boolean status = convertService.convertToBoolean(row.getCell(6));
 
 
-                String id = group_id + "_" + sub1 + "_" + sub2 + "_" + sub3;
-
-                if (existingIds.contains(id)) {
+                if (existingIds.contains(group_id)) {
                     duplicateIds.add(group_name);
                     continue; // Bỏ qua mã vùng đã tồn tại
                 }
 
                 GroupsRequest request =  GroupsRequest.builder()
-                        .id(id)
                         .group_id(group_id)
                         .groupname(group_name)
                         .sub1(sub1)
                         .sub2(sub2)
                         .sub3(sub3)
-                        .type(type)
+                        .status(status)
                         .build();
 
                 Groups group = groupsMapper.toCreateGroups(request);
@@ -100,14 +97,13 @@ public class GroupsService {
     }
 
     public GroupsResponse createGroup(GroupsRequest request){
-        if(groupsRepository.existsById(request.getId())){
+        if(groupsRepository.existsById(request.getGroup_id())){
             throw new AppException(ErrorCode.GROUP_EXISTS);
         }
         if(groupsRepository.existsByGroupname(request.getGroupname())){
             throw  new AppException(ErrorCode.CONTENT_EXISTS);
         }
         Groups groups = groupsMapper.toCreateGroups(request);
-        groups.setId(request.getGroup_id() + "_" + request.getSub1() + "_" + request.getSub2() + "_" + request.getSub3());
         //groups.setType(request.isType());
         return groupsMapper.toGroupsResponse(groupsRepository.save(groups));
     }
@@ -130,7 +126,7 @@ public class GroupsService {
         return groupsMapper.toGroupsResponse(groupsRepository.save(groups));
     }
     public List<GroupsResponse> getAllGroupsTrue(){
-        return groupsMapper.listGroups(groupsRepository.findGroupsByTypeTrue());
+        return groupsMapper.listGroups(groupsRepository.findGroupsByStatusTrue());
     }
 //    public void typegroup(String id, boolean type){
 //        Groups groups = groupsRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.CONTENT_NO_EXISTS));

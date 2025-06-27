@@ -49,7 +49,7 @@ public class SubjectsController {
         SubjectResponse result = subjectsService.createSubject(request);
         return ApiResponse.<SubjectResponse>builder()
                 .code(1000)
-                .message("Tạo tỉnh/thành phố thành công")
+                .message("Tạo môn học thành công")
                 .result(result)
                 .build();
     }
@@ -59,7 +59,26 @@ public class SubjectsController {
         List<SubjectResponse> result = subjectsService.importSubjectsFromExcel(file);
         return ApiResponse.<List<SubjectResponse>>builder()
                 .code(1000)
-                .message("Import tỉnh/thành phố từ Excel thành công")
+                .message("Import môn học từ Excel thành công")
+                .result(result)
+                .build();
+    }
+
+    @DeleteMapping("/delete/{sub_id}")
+    public ApiResponse<String> deleteSubject(@PathVariable String sub_id){
+        subjectsService.deleteSubject(sub_id);
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .message("Xóa môn học thành công")
+                .build();
+    }
+
+    @PutMapping("/update/{sub_id}")
+    public ApiResponse<SubjectResponse> updateProvince(@PathVariable String sub_id, @RequestBody SubjectsRequest request) {
+        SubjectResponse result = subjectsService.updateSubject(sub_id, request);
+        return ApiResponse.<SubjectResponse>builder()
+                .code(1000)
+                .message("Tạo môn học thành công")
                 .result(result)
                 .build();
     }

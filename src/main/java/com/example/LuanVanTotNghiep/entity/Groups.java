@@ -16,13 +16,11 @@ import java.util.Set;
 @Table(name = "groupss")
 public class Groups {
     @Id
-    String id;
-
     String group_id;
     @Column(name = "group_name")
     String groupname;
     String sub1;
     String sub2;
     String sub3;
-    boolean type;
+    boolean status;
 }

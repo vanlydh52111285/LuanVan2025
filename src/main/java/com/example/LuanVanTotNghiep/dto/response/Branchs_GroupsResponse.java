@@ -14,6 +14,6 @@ import java.util.Set;
 public class Branchs_GroupsResponse {
     String branch_id;
     String branchname;
-    boolean type;
+    boolean status;
     Set<GroupsResponse> groups;
 }

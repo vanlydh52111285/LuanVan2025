@@ -13,6 +13,6 @@ import java.util.List;
 public interface SubjectsMapper {
     Subjects toCreateSubjects(SubjectsRequest request);
     SubjectResponse toSubjectResponse(Subjects subjects);
-    void updateSubjects(@MappingTarget Subjects subjects, SubjectsRequest request);
+    void updateSubject(@MappingTarget Subjects subjects, SubjectsRequest request);
     List<SubjectResponse> listSubjects(List<Subjects> subjects);
 }

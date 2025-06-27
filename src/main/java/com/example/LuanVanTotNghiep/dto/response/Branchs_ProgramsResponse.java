@@ -14,6 +14,6 @@ import java.util.Set;
 public class Branchs_ProgramsResponse {
     String branch_id;
     String branchname;
-    boolean type;
+    boolean status;
     Set<Programs> programs;
 }
