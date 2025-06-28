@@ -34,8 +34,8 @@ public class Applications {
     @JoinColumn(name = "user_id")
     Users user;
 
-    @OneToMany(mappedBy = "document_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Documents> documentsList;
+    @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Documents documents;
     // Thêm mối quan hệ N-N với Aspirations
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -44,6 +44,7 @@ public class Applications {
             inverseJoinColumns = @JoinColumn(name = "aspiration_id")
     )
     Set<Aspirations> aspirations = new HashSet<>();
-    public Applications(String applicationId) {
-    }
+
+    @OneToOne(mappedBy = "applications", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Scoreboards scoreboards;
 }

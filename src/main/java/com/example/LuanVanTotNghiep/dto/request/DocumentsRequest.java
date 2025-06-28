@@ -10,12 +10,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DocumentsRequest {
     String applicationId;
-    String document_link_cccd;
-    String document_link_hoc_ba_lop10;
-    String document_link_hoc_ba_lop11;
-    String document_link_hoc_ba_lop12;
-    String document_link_bang_tot_nghiep_thpt;
-    String document_link_ket_qua_thi_thpt;
-    String document_link_ket_qua_thi_dgnl;
-    String document_link_chung_chi_ngoai_ngu;
+    String cccd;
+    String hoc_ba_lop10;
+    String hoc_ba_lop11;
+    String hoc_ba_lop12;
+    String bang_tot_nghiep_thpt;
+    String ket_qua_thi_thpt;
+    String ket_qua_thi_dgnl;
+    String chung_chi_ngoai_ngu;
 }

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProvincesRepository extends JpaRepository<Provinces, String> {
@@ -19,6 +20,7 @@ public interface ProvincesRepository extends JpaRepository<Provinces, String> {
 
     @Query("SELECT COUNT(s) FROM Schools s WHERE s.province.province_id = :provinceId")
     long countSchoolsByProvinceId(@Param("provinceId") String provinceId);
+
     @Query("SELECT p FROM Provinces p WHERE p.province_id = :province_id")
-    Provinces findByProvinceId(@Param("province_id") String provinceId);
+    Optional<Provinces> findByProvinceId(@Param("province_id") String provinceId);
 }

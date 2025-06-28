@@ -48,7 +48,7 @@ public class ApplicationsService {
             throw new AppException(ErrorCode.DATA_CONFLICT);
         }
 
-        return String.format("%s%s%s%04d", prefix, year, sequence);
+        return String.format("%s%s%04d", prefix, year, sequence);
     }
 
     @Transactional
@@ -65,7 +65,6 @@ public class ApplicationsService {
         application.setApplication_id(generateApplicationId(request.getApplication_type()));
         application.setCreate_date(new Date());
         Applications saved = applicationsRepository.saveAndFlush(application);
-        documentsService.updateDocumentsForApplication(saved);
 
         ApplicationsResponse response = applicationsMapper.toApplicationsResponse(saved);
         response.setUserId(saved.getUser() != null ? saved.getUser().getUser_id() : null);
@@ -143,14 +142,14 @@ public class ApplicationsService {
         }
         return documents.stream()
                 .flatMap(doc -> Stream.of(
-                        doc.getDocument_link_cccd(),
-                        doc.getDocument_link_hoc_ba_lop10(),
-                        doc.getDocument_link_hoc_ba_lop11(),
-                        doc.getDocument_link_hoc_ba_lop12(),
-                        doc.getDocument_link_bang_tot_nghiep_thpt(),
-                        doc.getDocument_link_ket_qua_thi_thpt(),
-                        doc.getDocument_link_ket_qua_thi_dgnl(),
-                        doc.getDocument_link_chung_chi_ngoai_ngu()
+                        doc.getCccd(),
+                        doc.getHoc_ba_lop10(),
+                        doc.getHoc_ba_lop11(),
+                        doc.getHoc_ba_lop12(),
+                        doc.getBang_tot_nghiep_thpt(),
+                        doc.getKet_qua_thi_thpt(),
+                        doc.getKet_qua_thi_dgnl(),
+                        doc.getChung_chi_ngoai_ngu()
                 ))
                 .filter(url -> url != null && !url.isEmpty())
                 .collect(Collectors.toList());

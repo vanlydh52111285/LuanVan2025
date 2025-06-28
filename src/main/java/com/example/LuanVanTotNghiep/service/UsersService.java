@@ -95,8 +95,10 @@ public class UsersService {
         if(usersRepository.existsByEmail(request.getEmail())){
             throw new AppException(ErrorCode.EMAIL_EXISTS);
         }
-        Districts districts = districtsRepository.findBydistrictId(request.getDistrict_id());
-        Provinces provinces = provincesRepository.findByProvinceId(request.getProvince_id());
+        Districts districts = districtsRepository.findBydistrictId(request.getDistrict_id())
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy quận/huyện"));
+        Provinces provinces = provincesRepository.findByProvinceId(request.getProvince_id())
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy tỉnh/thành"));
         Users users = usersMapper.toCreateUser(request);
         users.setPassword(passwordEncoder.encode(request.getPassword()));
         users.setCreated_at(new Date(System.currentTimeMillis()));
@@ -149,12 +151,14 @@ public class UsersService {
 
         // Kiểm tra province_id và district_id
 
-            Provinces province = provincesRepository.findByProvinceId(request.getProvince_id());
+            Provinces province = provincesRepository.findByProvinceId(request.getProvince_id())
+                    .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy tỉnh/thành " + request.getProvince_id()));
 
             users.setProvince(province);
 
 
-            Districts district = districtsRepository.findBydistrictId(request.getDistrict_id());
+            Districts district = districtsRepository.findBydistrictId(request.getDistrict_id())
+                    .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy quận/huyện " + request.getDistrict_id()));
             users.setDistrict(district);
 
 

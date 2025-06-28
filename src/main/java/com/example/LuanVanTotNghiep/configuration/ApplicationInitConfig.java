@@ -4,6 +4,8 @@ import com.example.LuanVanTotNghiep.entity.Districts;
 import com.example.LuanVanTotNghiep.entity.Provinces;
 import com.example.LuanVanTotNghiep.entity.Users;
 import com.example.LuanVanTotNghiep.enums.Role;
+import com.example.LuanVanTotNghiep.exception.AppException;
+import com.example.LuanVanTotNghiep.exception.ErrorCode;
 import com.example.LuanVanTotNghiep.repository.DistrictsRepository;
 import com.example.LuanVanTotNghiep.repository.ProvincesRepository;
 import com.example.LuanVanTotNghiep.repository.UsersRepository;
@@ -45,8 +47,11 @@ public class ApplicationInitConfig {
                 // Tạo tập hợp roles và thêm vai trò ADMIN từ enum Role
                 var roles = new HashSet<String>();
                 roles.add(Role.ADMIN.name()); // Role.ADMIN.name() trả về chuỗi "ADMIN"
-                Districts districts = districtsRepository.findBydistrictId("01_001");
-                Provinces provinces = provincesRepository.findByProvinceId("01");
+                Districts districts = districtsRepository.findBydistrictId("01_001")
+                        .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy quận/huyện với district_id: 01_001"));
+                Provinces provinces = provincesRepository.findByProvinceId("01")
+                        .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy tỉnh/thành với province_id: 01"));
+
                 // Tạo đối tượng Users với thông tin admin
                 Users users = Users.builder()
                         .fullname("admin") // Đặt tên đầy đủ là "admin"

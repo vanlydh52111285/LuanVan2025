@@ -36,8 +36,8 @@ public class SecurityConfig {
             "/programs-by-branch/{branch_id}","/groups-by-branch/{branch_id}",
             "/groups","/university",
             "/api/excel/download","/branch",
-            "/program", "/api/methods/getMethodById/{method_id}",
-            "/api/methods/getAllMethods", "/subjects/all/excludedSubIds",
+            "/program", "/methods/getMethodById/{method_id}",
+            "/methods/getAllMethods", "/subjects/all/excludedSubIds",
     };
     private final String[]  PUBLIC_ENDPOINTS_POST={
             "/student/otp",
@@ -49,7 +49,7 @@ public class SecurityConfig {
 
     //=====================ADMIN_ENOPOINTS=====================
     private final String[] ADMIN_GET={
-            "/student/update-users", "/api/applications/getAllApplications",
+            "/student/update-users", "/applications/getAllApplications",
     };
     private final String[] ADMIN_POST={
             "/create-list-pbs","/schedule",
@@ -94,21 +94,22 @@ public class SecurityConfig {
 
     //=====================STUDENT_ENOPOINTS=====================
     private final String[] STUDENT_GET={
-            "/api/documents/images",
-            "/api/applications/getApplicationsByUser", "/subjects/all"
+            "/documents/images",
+            "/applications/getApplicationsByUser", "/subjects/all",
+            "/scoreboards/get-by-application/{application_id}"
     };
     private final String[] STUDENT_POST={
-            "/api/documents/create",
-            "/api/applications/create"
+            "/documents/create", "/applications/create",
+            "/scoreboards/create"
     };
     private final String[] STUDENT_DELETE={
-            "/api/applications/delete/{applicationId}",
-            "/api/documents/delete/{documentId}"
+            "/applications/delete/{applicationId}",
+            "/documents/delete/{documentId}"
     };
     private final String[] STUDENT_PUT={
             "/student/update-users",
-            "/api/applications/update/{applicationId}",
-            "/api/documents/update/{documentId}"
+            "/applications/update/{applicationId}",
+            "/documents/update/{documentId}"
     };
 
 

@@ -1,10 +1,11 @@
 package com.example.LuanVanTotNghiep.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,7 @@ public class Subjects {
     String sub_name;
     boolean sub_sgk_2006;
     boolean sub_sgk_2018;
+
+    @OneToMany(mappedBy = "subject")
+    Set<ScoreboardSubject> scoreboardSubjects = new HashSet<>();
 }
