@@ -165,7 +165,7 @@ public class BranchsService {
                         .branch_id(branchId)
                         .branchname(branchName)
                         .status(status)
-                        .university_id(university_id) // Giả định university_id mặc định, cần điều chỉnh nếu có logic cụ thể
+                        .university_id(university_id)
                         .build();
 
                 Branchs branch = branchsMapper.toCreateBranch(request);
