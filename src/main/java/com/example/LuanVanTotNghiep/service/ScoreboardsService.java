@@ -62,6 +62,11 @@ public class ScoreboardsService {
                     .build());
         });
 
-        return scoreboardsMapper.toScoreboardsResponse(savedScoreboard);
+
+        ScoreboardsResponse response = scoreboardsMapper.toScoreboardsResponse(savedScoreboard);
+        response.setApplication_id(application.getApplication_id());
+        response.setSubjects(request.getSubjects());
+
+        return response;
     }
 }

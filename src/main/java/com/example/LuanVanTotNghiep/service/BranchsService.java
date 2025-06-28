@@ -180,7 +180,12 @@ public class BranchsService {
             }
 
             List<Branchs> savedBranchs = new ArrayList<>(branchsRepository.saveAll(branchsList));
-            return savedBranchs.stream().map(branchsMapper::toBranchResponse).collect(Collectors.toList());
+            List<BranchsResponse> responses = savedBranchs.stream().map(branch ->{
+                BranchsResponse response = branchsMapper.toBranchResponse(branch);
+                response.setUniversityResponse(universitiesMapper.toUniversityResponse(branch.getUniversity()));
+                return response;
+            }).toList();
+            return responses;
         } catch (IOException e) {
             throw new AppException(ErrorCode.UNEXPECTED_ERROR);
         }
