@@ -7,7 +7,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +36,14 @@ public class Applications {
 
     @OneToMany(mappedBy = "document_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Documents> documentsList;
-
+    // Thêm mối quan hệ N-N với Aspirations
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "applications_aspirations",
+            joinColumns = @JoinColumn(name = "application_id"),
+            inverseJoinColumns = @JoinColumn(name = "aspiration_id")
+    )
+    Set<Aspirations> aspirations = new HashSet<>();
     public Applications(String applicationId) {
     }
 }

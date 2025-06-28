@@ -40,6 +40,7 @@ public class SecurityConfig {
             "/api/methods/getAllMethods", "/subjects/all/excludedSubIds",
     };
     private final String[]  PUBLIC_ENDPOINTS_POST={
+            "/student/otp",
             "/student/register","/auth/student/login",
             "/auth/intro","/auth/admin/login"};
     private final String[]  PUBLIC_ENDPOINTS_PUT={

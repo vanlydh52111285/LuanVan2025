@@ -1,5 +1,7 @@
 package com.example.LuanVanTotNghiep.dto.response;
 
+import com.example.LuanVanTotNghiep.entity.Districts;
+import com.example.LuanVanTotNghiep.entity.Provinces;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -21,4 +23,9 @@ public class UsersResponse {
     String password;
     Date created_at;
     Set<String> role;
+    boolean sex;
+    String otp;
+    String adress;
+    DistrictsResponse districtsResponse;
+    ProvincesResponse provincesResponse;
 }

@@ -30,6 +30,19 @@ public class Users {
     String password;
     Date created_at;
     Set<String> role;
+    boolean sex;
+    boolean is_verify;
+    String otp;
+    String adress;
+    // Thêm mối quan hệ 1-N với Provinces
+    @ManyToOne
+    @JoinColumn(name = "province_id", nullable = false)
+    Provinces province;
+
+    // Thêm mối quan hệ 1-N với Districts
+    @ManyToOne
+    @JoinColumn(name = "district_id", nullable = false)
+    Districts district;
 
     @OneToMany(mappedBy = "application_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Applications> applicationList;
@@ -49,4 +62,6 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name = "user_id") // Khóa chính của Users
     )
     Set<Notifications> notifications = new HashSet<>();
-}
+
+
+ }
