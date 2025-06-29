@@ -19,5 +19,4 @@ public class DocumentsResponse {
     String ket_qua_thi_dgnl;
     String chung_chi_ngoai_ngu;
     String applicationId;
-    String userId;
 }

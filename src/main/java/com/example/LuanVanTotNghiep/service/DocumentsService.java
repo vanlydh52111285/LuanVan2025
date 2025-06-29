@@ -39,11 +39,8 @@ public class DocumentsService {
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
     }
 
-    public List<Documents> getDocumentsByUserIdAndApplicationId(String userId, String applicationId) {
-        if (userId == null || userId.isEmpty() || applicationId == null || applicationId.isEmpty()) {
-            throw new AppException(ErrorCode.INVALID_REQUEST);
-        }
-        List<Documents> documents = documentRepository.findByUserIdAndApplicationId(userId, applicationId);
+    public List<Documents> getDocumentsByUserIdAndApplicationId(String applicationId) {
+        List<Documents> documents = documentRepository.findByApplicationId(applicationId);
         if (documents.isEmpty()) {
             throw new AppException(ErrorCode.DATA_NOT_FOUND);
         }
@@ -65,14 +62,12 @@ public class DocumentsService {
 
         validateFileTypes(files);
         Documents document = documentsMapper.toCreateDocuments(request);
-        document.setUser(new Users(userId));
         document.setApplication(application);
         setDocumentLinks(document, files);
         Documents saved = documentRepository.saveAndFlush(document);
 
         DocumentsResponse response = documentsMapper.toDocumentsResponse(saved);
         response.setApplicationId(saved.getApplication() != null ? saved.getApplication().getApplication_id() : null);
-        response.setUserId(saved.getUser() != null ? saved.getUser().getUser_id() : null);
         return response;
     }
 
@@ -81,10 +76,6 @@ public class DocumentsService {
         String userId = authenticationService.getAuthenticatedUserId();
         Documents document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTENT_NO_EXISTS));
-
-        if (!document.getUser().getUser_id().equals(userId)) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
 
         if (request.getApplicationId() != null && !request.getApplicationId().isEmpty()) {
             Applications application = applicationRepository.findById(request.getApplicationId())
@@ -104,41 +95,46 @@ public class DocumentsService {
 
         DocumentsResponse response = documentsMapper.toDocumentsResponse(updated);
         response.setApplicationId(updated.getApplication() != null ? updated.getApplication().getApplication_id() : null);
-        response.setUserId(updated.getUser() != null ? updated.getUser().getUser_id() : null);
         return response;
     }
 
     @Transactional
-    public void deleteDocument(Integer documentId, String userId) throws IOException {
-        Documents document = documentRepository.findByDocumentIdAndUserId(documentId, userId)
+    public void deleteDocument(String applicationId, int documentId) throws IOException {
+        // Tìm Documents cần xóa
+        Documents document = documentRepository.findByApplicationIdAndDocumentId(applicationId, documentId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
-        deleteDocumentLinks(document);
+        // Tìm Applications liên quan
+        Applications application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATA_NOT_FOUND));
+
+        // Xóa liên kết giữa Applications và Documents
+        if (application.getDocuments() != null && application.getDocuments().getDocument_id() == documentId) {
+            application.setDocuments(null); // Đặt liên kết về null
+            applicationRepository.saveAndFlush(application); // Cập nhật trước khi xóa
+        }
+
+        // Xóa Documents
         documentRepository.delete(document);
+        documentRepository.flush();
+
+        // Xử lý xóa file trên Cloudinary, không ảnh hưởng đến giao dịch
+        try {
+            deleteDocumentLinks(document);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Transactional
-    public void deleteAllDocumentsByApplicationId(String userId, String applicationId) {
-        List<Documents> documents = documentRepository.findByUserIdAndApplicationId(userId, applicationId);
+    public void deleteAllDocumentsByApplicationId(String applicationId) {
+        List<Documents> documents = documentRepository.findByApplicationId(applicationId);
         for (Documents doc : documents) {
             try {
-                deleteDocument(doc.getDocument_id(), userId);
+                deleteDocument(applicationId, doc.getDocument_id());
             } catch (IOException e) {
                 throw new AppException(ErrorCode.UNEXPECTED_ERROR);
             }
         }
-    }
-
-    @Transactional
-    public void updateDocumentsForApplication(Applications application) {
-        String userId = application.getUser().getUser_id();
-        if (userId == null || userId.isEmpty()) {
-            throw new AppException(ErrorCode.INVALID_REQUEST);
-        }
-        List<Documents> documents = documentRepository.findByApplicationIsNullAndUserId(userId);
-        documents.forEach(doc -> {
-            doc.setApplication(application);
-            documentRepository.save(doc);
-        });
     }
 
     private void validateFileTypes(MultipartFile[] files) {

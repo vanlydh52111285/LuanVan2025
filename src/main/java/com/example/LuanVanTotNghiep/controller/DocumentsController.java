@@ -30,16 +30,14 @@ public class DocumentsController {
     @GetMapping("/images")
     public ApiResponse<List<DocumentsResponse>> getDocumentImages(
             @RequestParam String applicationId) {
-        String userId = authenticationService.getAuthenticatedUserId();
         return ApiResponse.<List<DocumentsResponse>>builder()
                 .code(1000)
                 .message("Lấy tài liệu thành công")
-                .result(documentService.getDocumentsByUserIdAndApplicationId(userId, applicationId)
+                .result(documentService.getDocumentsByUserIdAndApplicationId(applicationId)
                         .stream()
                         .map(doc -> {
                             DocumentsResponse response = documentsMapper.toDocumentsResponse(doc);
                             response.setApplicationId(doc.getApplication() != null ? doc.getApplication().getApplication_id() : null);
-                            response.setUserId(doc.getUser() != null ? doc.getUser().getUser_id() : null);
                             return response;
                         })
                         .toList())
@@ -66,14 +64,12 @@ public class DocumentsController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{documentId}")
-    public ApiResponse<String> deleteDocument(@PathVariable Integer documentId) throws IOException {
-        String userId = authenticationService.getAuthenticatedUserId();
-        documentService.deleteDocument(documentId, userId);
+    @DeleteMapping("/delete/{applicationId}/{documentId}")
+    public ApiResponse<String> deleteDocument(@PathVariable String applicationId, @PathVariable int documentId) throws IOException {
+        documentService.deleteDocument(applicationId, documentId);
         return ApiResponse.<String>builder()
                 .code(1000)
                 .message("Xóa tài liệu thành công")
-                .result("Document with ID " + documentId + " deleted successfully")
                 .build();
     }
 

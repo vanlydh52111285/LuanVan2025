@@ -128,30 +128,7 @@ public class ApplicationsService {
         if (!application.getUser().getUser_id().equals(userId)) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
-        documentsService.deleteAllDocumentsByApplicationId(userId, applicationId);
+        documentsService.deleteAllDocumentsByApplicationId(applicationId);
         applicationsRepository.deleteById(applicationId);
-    }
-
-    public List<String> getDocumentImagesByUserIdAndApplicationId(String userId, String applicationId) {
-        if (userId == null || userId.isEmpty() || applicationId == null || applicationId.isEmpty()) {
-            throw new AppException(ErrorCode.INVALID_REQUEST);
-        }
-        List<Documents> documents = documentsService.getDocumentsByUserIdAndApplicationId(userId, applicationId);
-        if (documents.isEmpty()) {
-            throw new AppException(ErrorCode.DATA_NOT_FOUND);
-        }
-        return documents.stream()
-                .flatMap(doc -> Stream.of(
-                        doc.getCccd(),
-                        doc.getHoc_ba_lop10(),
-                        doc.getHoc_ba_lop11(),
-                        doc.getHoc_ba_lop12(),
-                        doc.getBang_tot_nghiep_thpt(),
-                        doc.getKet_qua_thi_thpt(),
-                        doc.getKet_qua_thi_dgnl(),
-                        doc.getChung_chi_ngoai_ngu()
-                ))
-                .filter(url -> url != null && !url.isEmpty())
-                .collect(Collectors.toList());
     }
 }

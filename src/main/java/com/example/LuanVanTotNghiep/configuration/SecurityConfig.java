@@ -96,7 +96,7 @@ public class SecurityConfig {
     private final String[] STUDENT_GET={
             "/documents/images",
             "/applications/getApplicationsByUser", "/subjects/all",
-            "/scoreboards/get-by-application/{application_id}"
+            "/scoreboards/get-by-application/{application_id}", "/aspirations/create",
     };
     private final String[] STUDENT_POST={
             "/documents/create", "/applications/create",
@@ -104,7 +104,7 @@ public class SecurityConfig {
     };
     private final String[] STUDENT_DELETE={
             "/applications/delete/{applicationId}",
-            "/documents/delete/{documentId}"
+            "/documents/delete/{applicationId}/{documentId}"
     };
     private final String[] STUDENT_PUT={
             "/student/update-users",

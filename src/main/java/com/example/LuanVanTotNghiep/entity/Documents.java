@@ -30,9 +30,4 @@ public class Documents {
     @OneToOne
     @JoinColumn(name = "application_id", nullable = true)
     Applications application;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    Users user;
-
 }
